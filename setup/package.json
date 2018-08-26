@@ -1,0 +1,9 @@
+{
+    "name": "@root/setup",
+    "version": "1.0.0",
+    "dependencies": {
+        "@dependency/hostCLIAdapter": "https://github.com/AppScriptIO/hostCLIAdapter"
+    },
+    "main": "./entrypoint.js"
+
+}

@@ -1,0 +1,34 @@
+[
+    {
+        "tag": ["production"],
+        "dependency": [
+            {
+                "type": "npm",
+                "name": "child-process-promise", 
+                "version": {
+                    "type": "semver",
+                    "number": "2.2.1",
+                    "range": "Compatible with version"
+                }
+            },
+            {
+                "type": "npm",
+                "name": "dockerode",
+                "version": {
+                    "type": "semver",
+                    "number": "2.5.1",
+                    "range": "Compatible with version"
+                }
+            },
+            {
+                "type": "npm",
+                "name": "rethinkdb",
+                "version": {
+                    "type": "semver",
+                    "number": "2.3.3",
+                    "range": "Compatible with version"
+                }
+            }        
+        ]
+    }
+]
