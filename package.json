@@ -20,6 +20,7 @@
         "dockerode": "^2.5.1",
         "resolve": "^1.8.1",
         "rethinkdb": "^2.3.3",
-        "slash": "^2.0.0"
+        "slash": "^2.0.0",
+        "upath": "^1.1.0"
     }
 }

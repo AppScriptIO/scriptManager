@@ -1,52 +1,11 @@
-import { spawn, spawnSync } from 'child_process'
-import operatingSystem from 'os'
-import path from 'path'
-import slash from 'slash'
 
-const containerPath = { // defined paths of volumes inside container.
-    application: '/project/application'
-}
 
-export function runManagerAppInContainerWithClientApp({
-    applicationHostPath,
-    // as default the managerApp should be installed (i.e. expected to be a dependency) as a dependency in a nested folder to the application.
-    managerAppHostPath
-}) {
-    let managerRelativePathFromApplication = path.relative(applicationHostPath, managerAppHostPath)
-    managerRelativePathFromApplication = slash(managerRelativePathFromApplication) // convert to Unix path from Windows path (change \ slash to /)
-    // NOTE: creating an absolute path for managerApp assumes that the module exist under the application directory (/project/application).
-    let managerAbsolutePathInContainer = slash(path.join(containerPath.application, managerRelativePathFromApplication)) // create an absolute path for managerApp which should be nested to application path.
+/**
+ * Node process must be run with `preseve symlink` option (flag or env variable), by Node's default it is off. https://nodejs.org/api/cli.html#cli_node_preserve_symlinks_1
+ * As this module relies on node_modules being resolved from the symlink location in case the module is symlinks from outside of the application root path (for development purposes).
+ * This implementation checks only for environment variable (not flag).
+ */
+const preserveSymlinkOption = 'NODE_PRESERVE_SYMLINKS'
+if(!process.env[preserveSymlinkOption]) throw new Error('Node\'s preserve symlink option must be turned on (NODE_PRESERVE_SYMLINKS)')
 
-    let image = 'node:latest',
-        processCommand = 'docker',
-        commandArgument = process.argv.slice(3), // remove first 2 commands - "<binPath>/node", "<path>/entrypoint.js" and the third host machine script name "containerManager"
-        containerCommand = `node ${managerAbsolutePathInContainer} ${commandArgument.join(' ')}`,
-        // containerBashCommand = `bash -c "${containerCommandCase1} || ${containerCommandCase2}"`,
-        containerPrefix = 'managerApp'
-    
-    let processArg = [
-        `run`,
-        `--rm`, // automatically remove after container exists.
-        `--volume ${applicationHostPath}:/project/application`,
-        // `--volume ${managerAppHostPath}:/project/managerApp`,
-        `--volume /var/run/docker.sock:/var/run/docker.sock`,
-        `--volume ${operatingSystem.homedir()}/.ssh:/project/.ssh`,
-        `--env hostPath=${applicationHostPath}`,
-        `--env sshUsername=${operatingSystem.userInfo().username}`,
-        `--name ${containerPrefix}`,
-        `${image}`,
-        `${containerCommand}`
-    ]
-    
-    console.log(
-        `%s \n %s \n %s`,
-        `\x1b[3m\x1b[2m > ${processCommand} ${processArg.join(' ')}\x1b[0m`,
-        `\t\x1b[3m\x1b[2mimage:\x1b[0m ${image}`,
-        `\t\x1b[3m\x1b[2mcommand:\x1b[0m ${containerCommand}`
-    )    
-    
-    let cp = spawn(processCommand, processArg, { detached: false, shell: true, stdio: [0,1,2] })
-    cp.on('error', function( err ){ throw err })
-    cp.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
-    console.groupEnd()
-}    
+module.exports = require('./script.js')

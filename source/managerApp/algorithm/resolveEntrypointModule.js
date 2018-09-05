@@ -1,10 +1,8 @@
 import filesystem from 'fs'
 import path from 'path'
-import { installModuleMultiple } from '@dependency/installNodeJSModule'
-import { IsFileOrFolderJSModule } from '@dependency/JSModuleTypeCheck'
 import configuration from '@root/setup/configuration/configuration.js'
 
-export function executeEntrypointConfiguration({
+export function resolveEntrypointPathFromConfiguration({
     entrypointConfig // object of entrypoint configuration
 }) {
 
@@ -19,38 +17,10 @@ export function executeEntrypointConfiguration({
         entrypointModulePath = path.join(configuration.externalApp.entrypointFolder, `${entrypointConfig.key}`) // .js file or folder module.
     }
     
-    // install node_modules for entrypoint module if not present in case a folder is being passed.
-    // ISSUE - installing node_modules of and from within running module, will fail to load the newlly created moduules as node_modules path was already read by the nodejs application.
-    let installDirectory,
-        moduleType = IsFileOrFolderJSModule({ modulePath: entrypointModulePath });
-
-    switch(moduleType) {
-        case 'directory':
-            installDirectory = entrypointModulePath
-        break;
-        case 'file':
-            installDirectory = path.dirname(entrypointModulePath) 
-        break;
-    }
-
-    // Install node_modules
-    let isNodeModuleInstallExist = filesystem.existsSync(path.join(installDirectory, `node_modules`))
-    if (!isNodeModuleInstallExist) {
-        installModuleMultiple({ installPathArray: [ installDirectory ] }) // install modules
-    }
-    
-    // require entrypoint module.
-    try {
-        console.log('\x1b[45m%s\x1b[0m \x1b[2m\x1b[3m%s\x1b[0m', `Module:`, `Running NodeJS entrypoint module`)
-        console.log(`\t\x1b[2m\x1b[3m%s\x1b[0m \x1b[95m%s\x1b[0m`, `File path:`, `${entrypointModulePath}`)
-        require(entrypointModulePath)
-    } catch (error) {
-        throw error
-    }
-    
+    return entrypointModulePath    
 }
 
-// returns arguments that can be used in 'executeEntrypointConfiguration' function, that where produced from the CLI issued commands
+// returns arguments that can be used in 'resolveEntrypointPathFromConfiguration' function, that where produced from the CLI issued commands
 export function cliInterface({
     // key value pair object representing the passed values.
     envrironmentArgument,
