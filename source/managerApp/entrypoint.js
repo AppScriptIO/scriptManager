@@ -10,7 +10,7 @@ async function run() {
     // Setup environment 
     await require('../../setup/script/appRuntime/runtimeSetupEnvironment.js').setupEnvironment()
     // Run
-    require('./app.js')
+    await require('./app.js').run()
 }
 
 module.exports = { run }

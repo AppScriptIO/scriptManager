@@ -20,45 +20,53 @@ import { convertWindowsPathToUnix } from './utility/convertWindowsPathToUnix.js'
 console.log(`\x1b[2m\x1b[3m%s\x1b[0m \n\t %s \n\t %s`, `• configuration:`, 
             `externalAppRootFolder = ${configuration.externalApp.rootFolder}`,
             `externalAppAppDeploymentLifecycle = ${configuration.externalApp.dependency.appDeploymentLifecycle}`)
+        
+export async function run() {
 
-let nodeCommandKeyValueArgument = parseKeyValuePairSeparatedBySymbolFromArray({ array: process.argv })
+    let nodeCommandKeyValueArgument = parseKeyValuePairSeparatedBySymbolFromArray({ array: process.argv })
+    
+    let entrypointConfig = cliInterface({ 
+        envrironmentArgument: process.env,
+        nodeCommandArgument: nodeCommandKeyValueArgument
+    })
+    
+    // The applicationPathOnHostMachine is the path on the machine which docker client envoked manager app. In case of Docker for Windows, the path is a Windows path. While the path sent from a running container, should be refering to the hyper-v MobyLinuxVM (inside created by Docker for Windows are /host_mnt/c, with symlinks /c & /C).
+    process.env.applicationPathOnHostMachine = convertWindowsPathToUnix({ path: process.env.applicationPathOnHostMachine }) // change Windows path to Unix path - Note that using Unix / on Windows works perfectly inside nodejs, so there's no reason to stick to the Windows legacy at all.
+    
+    let entrypointModulePath = resolveEntrypointPathFromConfiguration({ entrypointConfig })
 
-let entrypointConfig = cliInterface({ 
-    envrironmentArgument: process.env,
-    nodeCommandArgument: nodeCommandKeyValueArgument
-})
+    await installEntrypointModule({ entrypointModulePath })
 
-// The applicationPathOnHostMachine is the path on the machine which docker client envoked manager app. In case of Docker for Windows, the path is a Windows path. While the path sent from a running container, should be refering to the hyper-v MobyLinuxVM (inside created by Docker for Windows are /host_mnt/c, with symlinks /c & /C).
-process.env.applicationPathOnHostMachine = convertWindowsPathToUnix({ path: process.env.applicationPathOnHostMachine }) // change Windows path to Unix path - Note that using Unix / on Windows works perfectly inside nodejs, so there's no reason to stick to the Windows legacy at all.
+    // TODO: 
+    // Pass relevant parameters used to create container structure to the module.
 
-let entrypointModulePath = resolveEntrypointPathFromConfiguration({ entrypointConfig })
+    // require entrypoint module.
+    try {
+        console.log('\x1b[45m%s\x1b[0m \x1b[2m\x1b[3m%s\x1b[0m', `Module:`, `Running NodeJS entrypoint module`)
+        console.log(`\t\x1b[2m\x1b[3m%s\x1b[0m \x1b[95m%s\x1b[0m`, `File path:`, `${entrypointModulePath}`)
+        require(entrypointModulePath) // pass arguments as application root path (rootPath: {  })
+    } catch (error) {
+        throw error
+    }
 
-// install node_modules for entrypoint module if not present in case a folder is being passed.
-// ISSUE - installing node_modules of and from within running module, will fail to load the newlly created moduules as node_modules path was already read by the nodejs application.
-let installDirectory,
-    moduleType = IsFileOrFolderJSModule({ modulePath: entrypointModulePath });
-switch(moduleType) {
-    case 'directory':
-        installDirectory = entrypointModulePath
-    break;
-    case 'file':
-        installDirectory = path.dirname(entrypointModulePath) 
-    break;
 }
-// Install node_modules
-let isNodeModuleInstallExist = filesystem.existsSync(path.join(installDirectory, `node_modules`))
-if (!isNodeModuleInstallExist) {
-    installModuleMultiple({ installPathArray: [ installDirectory ] }) // install modules
-}
 
-// TODO: 
-// Pass relevant parameters used to create container structure to the module.
-
-// require entrypoint module.
-try {
-    console.log('\x1b[45m%s\x1b[0m \x1b[2m\x1b[3m%s\x1b[0m', `Module:`, `Running NodeJS entrypoint module`)
-    console.log(`\t\x1b[2m\x1b[3m%s\x1b[0m \x1b[95m%s\x1b[0m`, `File path:`, `${entrypointModulePath}`)
-    require(entrypointModulePath) // pass arguments as application root path (rootPath: {  })
-} catch (error) {
-    throw error
+async function installEntrypointModule({ entrypointModulePath }) {
+    // install node_modules for entrypoint module if not present in case a folder is being passed.
+    // ISSUE - installing node_modules of and from within running module, will fail to load the newlly created moduules as node_modules path was already read by the nodejs application.
+    let installDirectory,
+        moduleType = IsFileOrFolderJSModule({ modulePath: entrypointModulePath });
+    switch(moduleType) {
+        case 'directory':
+            installDirectory = entrypointModulePath
+        break;
+        case 'file':
+            installDirectory = path.dirname(entrypointModulePath) 
+        break;
+    }
+    // Install node_modules
+    let isNodeModuleInstallExist = filesystem.existsSync(path.join(installDirectory, `node_modules`))
+    if (!isNodeModuleInstallExist) {
+        await installModuleMultiple({ installPathArray: [ installDirectory ] }) // install modules
+    }
 }
