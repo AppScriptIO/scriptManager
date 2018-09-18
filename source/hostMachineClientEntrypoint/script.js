@@ -13,10 +13,10 @@ const containerPath = { // defined paths of volumes inside container.
  *  - Manager path in container
  */
 export function runManagerAppInContainerWithClientApp(input) {
-
+    console.log(process.argv)
     // TODO: Nested objects as paramaeters proxy implementation - create a proxy for functions to add support for function parameter destructuring of nested objects with preservation of objects and it`s properties, instead of creating individual separated parameters.
     // use nested objects as function parameters - an implementation of destructuring that preserves nested structure of parameters and default values. TODO: Issue - doesn't throw if parameters not passed.
-    let application = {}, managerApp = {};
+    let application = {}, managerApp = {}, invokedDirectly;
     ({
         application: {
             hostPath: application.hostPath, // the Windows host application path
@@ -26,9 +26,14 @@ export function runManagerAppInContainerWithClientApp(input) {
         // as default the managerApp should be installed (i.e. expected to be a dependency) as a dependency in a nested folder to the application.
         managerApp: {
             hostRelativePath: managerApp.hostRelativePath,
-            commandArgument: managerApp.commandArgument = process.argv.slice(3), // remove first 2 commands - "<binPath>/node", "<path>/entrypoint.js" and the third host machine script name "containerManager"
-        }
+            commandArgument: managerApp.commandArgument = process.argv,
+        },
+        invokedDirectly = false
     } = input) // destructure nested objects to the object properties themselves.
+
+    managerApp.commandArgument = (invokedDirectly) ? 
+        managerApp.commandArgument.slice(2) : // remove first 2 commands only - "<binPath>/node", "<path>/containerManager.js".
+        managerApp.commandArgument.slice(3), // remove first 2 commands - "<binPath>/node", "<path>/entrypoint.js" and the third host machine script name "containerManager"
 
     managerApp.relativePathFromApplication = path.relative(application.hostPath, managerApp.hostRelativePath)
     managerApp.relativePathFromApplication = slash(managerApp.relativePathFromApplication) // convert to Unix path from Windows path (change \ slash to /)
