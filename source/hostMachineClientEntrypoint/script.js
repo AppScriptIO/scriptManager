@@ -68,8 +68,8 @@ export function runManagerAppInContainerWithClientApp(input) {
         `\t\x1b[3m\x1b[2mcommand:\x1b[0m ${containerCommand}`
     )    
     
-    let cp = spawn(processCommand, processArg, { detached: false, shell: true, stdio: [0,1,2] })
+    let cp = spawn(processCommand, processArg, { detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit' ] })
     cp.on('error', function( err ){ throw err })
-    cp.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
+    // cp.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
     console.groupEnd()
 }

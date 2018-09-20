@@ -36,8 +36,13 @@ function invoke({ configurationPath, managerAppHostRelativePath }) {
 function cliInterface() {
     var { parseKeyValuePairSeparatedBySymbolFromArray, combineKeyValueObjectIntoString } = require('@dependency/parseKeyValuePairSeparatedBySymbol')
     const namedArgs = parseKeyValuePairSeparatedBySymbolFromArray({ array: process.argv }) // ['x=y'] --> { x: y }
-    assert(namedArgs.configuration, 'X `configuration` parameter (relative configuration path from PWD) in command line argument must be set.')
-    const configurationPath = path.join(process.env.PWD, namedArgs.configuration)
+    // assert(namedArgs.configuration, )
+    if(!namedArgs.configuration) {
+        console.log(`%c45455455`, 'color: #F99157;', 'X `configuration` parameter (relative configuration path from PWD) in command line argument must be set.')
+    }
+    const configurationPath = (namedArgs.configuration) ? 
+        path.join(process.env.PWD, namedArgs.configuration) : 
+        path.join(process.env.PWD, 'configuration'); // default seach in prim house
     process.argv = process.argv.filter(value => value !== `configuration=${namedArgs.configuration}`) // remove configuration paramter
 
     let workingDirectoryPath = path.normalize(process.env.PWD),
