@@ -20,7 +20,12 @@ import { convertWindowsPathToUnix } from './utility/convertWindowsPathToUnix.js'
 console.log(`\x1b[2m\x1b[3m%s\x1b[0m \n\t %s \n\t %s`, `• configuration:`, 
             `externalAppRootFolder = ${configuration.externalApp.rootFolder}`,
             `externalAppAppDeploymentLifecycle = ${configuration.externalApp.dependency.appDeploymentLifecycle}`)
-        
+
+process.on('SIGINT', () => { 
+    console.log("Caught interrupt signal - managerApp container level")
+    process.exit(0)
+})
+  
 export async function run() {
 
     let nodeCommandKeyValueArgument = parseKeyValuePairSeparatedBySymbolFromArray({ array: process.argv })
@@ -44,7 +49,7 @@ export async function run() {
     try {
         console.log('\x1b[45m%s\x1b[0m \x1b[2m\x1b[3m%s\x1b[0m', `Module:`, `Running NodeJS entrypoint module`)
         console.log(`\t\x1b[2m\x1b[3m%s\x1b[0m \x1b[95m%s\x1b[0m`, `File path:`, `${entrypointModulePath}`)
-        require(entrypointModulePath) // pass arguments as application root path (rootPath: {  })
+        let returned = require(entrypointModulePath) // pass arguments as application root path (rootPath: {  })
     } catch (error) {
         throw error
     }

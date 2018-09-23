@@ -2,6 +2,7 @@ import { spawn, spawnSync } from 'child_process'
 import operatingSystem from 'os'
 import path from 'path'
 import slash from 'slash'
+import { setInterval } from 'timers';
 
 const containerPath = { // defined paths of volumes inside container.
     application: '/project/application'
@@ -50,6 +51,7 @@ export function runManagerAppInContainerWithClientApp(input) {
     let processArg = [
         `run`,
         `--rm`, // automatically remove after container exists.
+        `--interactive --tty`, // allocate a terminal - this allows for interacting with the container process.
         `--volume ${application.hostPath}:${application.pathInContainer}`,
         // `--volume ${managerAppHostPath}:/project/managerApp`,
         `--volume /var/run/docker.sock:/var/run/docker.sock`,
@@ -68,8 +70,16 @@ export function runManagerAppInContainerWithClientApp(input) {
         `\t\x1b[3m\x1b[2mcommand:\x1b[0m ${containerCommand}`
     )    
     
-    let cp = spawn(processCommand, processArg, { detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit' ] })
-    cp.on('error', function( err ){ throw err })
-    // cp.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
+    let childProcess = spawn(processCommand, processArg, { detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ] })
+    childProcess.on('error', function( err ){ throw err })
+    childProcess.on('exit', () => { console.log(`PID: Child ${childProcess.pid} terminated.`) })
+    // childProcess.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
+    console.log(`PID: Child ${childProcess.pid}`)
+
+    process.on('SIGINT', () => { // when docker is using `-it` option this event won't be fired in this process, as the SIGINT signal is passed directly to the docker container.
+        console.log("• Caught interrupt signal - host machine level")
+        childProcess.kill('SIGINT')
+    })
+
     console.groupEnd()
 }
