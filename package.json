@@ -18,6 +18,7 @@
         "@dependency/parseKeyValuePairSeparatedBySymbol": "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol",
         "child-process-promise": "^2.2.1",
         "dockerode": "^2.5.1",
+        "find-up": "^3.0.0",
         "resolve": "^1.8.1",
         "rethinkdb": "^2.3.3",
         "slash": "^2.0.0",
@@ -26,5 +27,4 @@
     "bin": {
         "containerManager": "./setup/script/bin/containerManager.js"
     }
-    
 }

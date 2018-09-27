@@ -16,6 +16,7 @@ import { parseKeyValuePairSeparatedBySymbolFromArray, combineKeyValueObjectIntoS
 import { installModuleMultiple } from '@dependency/installNodeJSModule'
 import { IsFileOrFolderJSModule } from '@dependency/JSModuleTypeCheck'
 import { convertWindowsPathToUnix } from './utility/convertWindowsPathToUnix.js'
+import findFileWalkingUpDirectory from 'find-up'
 
 console.log(`\x1b[2m\x1b[3m%s\x1b[0m \n\t %s \n\t %s`, `• configuration:`, 
             `externalAppRootFolder = ${configuration.externalApp.rootFolder}`,
@@ -70,8 +71,13 @@ async function installEntrypointModule({ entrypointModulePath }) {
         break;
     }
     // Install node_modules
-    let isNodeModuleInstallExist = filesystem.existsSync(path.join(installDirectory, `node_modules`))
-    if (!isNodeModuleInstallExist) {
-        await installModuleMultiple({ installPathArray: [ installDirectory ] }) // install modules
+    // in case package.json doesn't exist in script's path, then check upper directories for the closest package.json and install if no node_modules located. This is because the yarn install if doesn't detect package.json file it will search for it in the upper directories and install the closest one.
+    let closestPackageJsonPath = await findFileWalkingUpDirectory('package.json', { cwd: installDirectory }),
+        closestPackageJsonDirectoryPath = (closestPackageJsonPath) ? path.dirname(closestPackageJsonPath) : false;
+    if(closestPackageJsonDirectoryPath) {
+        let isNodeModuleInstallExist = filesystem.existsSync(path.join(closestPackageJsonDirectoryPath, `node_modules`))
+        if (!isNodeModuleInstallExist) {
+            await installModuleMultiple({ installPathArray: [ installDirectory ] }) // install modules
+        }
     }
 }
