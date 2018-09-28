@@ -50,9 +50,5 @@ module.exports = {
         dependency: {
             appDeploymentLifecycle: `${managerAppRootFolder}/dependency/gitSubmodule/appDeploymentLifecycle`,
         }
-    },
-    buildEnvironmentImage: {
-        dockerComposeVersion: '1.21.2',
-        dockerMachineVersion: '0.15.0'
     }
 }

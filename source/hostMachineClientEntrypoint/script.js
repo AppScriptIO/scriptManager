@@ -46,51 +46,122 @@ export function runManagerAppInContainerWithClientApp(input) {
         workingDirectoryRelativeToApp = slash(path.relative(application.hostPath, hostWorkingDirectory)),
         workingDirectoryInContainer = slash(path.join(application.pathInContainer, workingDirectoryRelativeToApp)) // absolute container path of working directory 
 
-    let image = 'myuserindocker/deployment-environment:simple_NodeDockerCompose', // this container should have docker client & docker-compose installed in.
-        processCommand = 'docker',
-        commandArgument = managerApp.commandArgument,
-        containerCommand = `node ${managerApp.absolutePathInContainer} ${commandArgument.join(' ')}`,
-        // containerBashCommand = `bash -c "${containerCommandCase1} || ${containerCommandCase2}"`,
-        containerPrefix = 'managerApp'
+    let networkName = 'managerApp'
+    {
+        spawnSync('docker', [`network create ${networkName}`], { 
+            detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit'],
+            env: process.env // pass environment variables like process.env.PWD to spawn process
+        })    
+    }
+
+    let childProcessArray = []
+    {
+        let image = 'myuserindocker/deployment-environment:simple_NodeDockerCompose', // this container should have docker client & docker-compose installed in.
+            processCommand = 'docker',
+            commandArgument = managerApp.commandArgument,
+            containerCommand = `node ${managerApp.absolutePathInContainer} ${commandArgument.join(' ')}`,
+            // containerBashCommand = `bash -c "${containerCommandCase1} || ${containerCommandCase2}"`,
+            containerPrefix = 'managerApp'
+        
+        let processArg = [
+                `run`,
+                `--rm`, // automatically remove after container exists.
+                `--interactive --tty`, // allocate a terminal - this allows for interacting with the container process.
+                `--volume ${application.hostPath}:${application.pathInContainer}`,
+                // `--volume ${managerAppHostPath}:/project/managerApp`,
+                `--volume /var/run/docker.sock:/var/run/docker.sock`,
+                `--volume ${operatingSystem.homedir()}/.ssh:/project/.ssh`,
+                `--network=${networkName}`,
+                `-P`,
+                `--env applicationPathOnHostMachine=${application.hostPath}`,
+                `--env sshUsername=${operatingSystem.userInfo().username}`,
+                `--env PWD=${workingDirectoryInContainer}` // pass PWD absolute path as in container (convert host machine path to container path)
+            ]
+            // .concat(convertObjectToDockerEnvFlag(process.env))  // pass all envrinment variables - causes issues as some variables like `PATH` are related to the executed script
+            .concat([
+                `--name ${containerPrefix}`,
+                `${image}`,
+                `${containerCommand}`
+            ])
+        console.log(
+            `%s \n %s \n %s`,
+            `\x1b[3m\x1b[2m > ${processCommand} ${processArg.join(' ')}\x1b[0m`,
+            `\t\x1b[3m\x1b[2mimage:\x1b[0m ${image}`,
+            `\t\x1b[3m\x1b[2mcommand:\x1b[0m ${containerCommand}`
+        )    
+        
+        let childProcess = spawn(processCommand, processArg, { 
+            detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
+            env: process.env // pass environment variables like process.env.PWD to spawn process
+        })
+        childProcess.on('error', function( err ){ throw err })
+        childProcess.on('exit', () => { 
+            console.log(`PID: Child ${childProcess.pid} terminated.`)
+            // if child process exits then remove all other running processes
+            killChildProcess(childProcessArray)
+        })
+        // childProcess.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
+        console.log(`PID: Child ${childProcess.pid}`)
+        childProcessArray.push(childProcess)
+    }
+
+    {
+        let image = 'rethinkdb:latest', // this container should have docker client & docker-compose installed in.
+            processCommand = 'docker',
+            containerCommand = ``,
+            containerPrefix = 'managerApp_rehinkdb', 
+            networkAlais = 'rethinkdb'
     
-    let processArg = [
-            `run`,
-            `--rm`, // automatically remove after container exists.
-            `--interactive --tty`, // allocate a terminal - this allows for interacting with the container process.
-            `--volume ${application.hostPath}:${application.pathInContainer}`,
-            // `--volume ${managerAppHostPath}:/project/managerApp`,
-            `--volume /var/run/docker.sock:/var/run/docker.sock`,
-            `--volume ${operatingSystem.homedir()}/.ssh:/project/.ssh`,
-            `--env applicationPathOnHostMachine=${application.hostPath}`,
-            `--env sshUsername=${operatingSystem.userInfo().username}`,
-            `--env PWD=${workingDirectoryInContainer}` // pass PWD absolute path as in container (convert host machine path to container path)
-        ]
-        // .concat(convertObjectToDockerEnvFlag(process.env))  // pass all envrinment variables - causes issues as some variables like `PATH` are related to the executed script
-        .concat([
-            `--name ${containerPrefix}`,
-            `${image}`,
-            `${containerCommand}`
-        ])
-    console.log(
-        `%s \n %s \n %s`,
-        `\x1b[3m\x1b[2m > ${processCommand} ${processArg.join(' ')}\x1b[0m`,
-        `\t\x1b[3m\x1b[2mimage:\x1b[0m ${image}`,
-        `\t\x1b[3m\x1b[2mcommand:\x1b[0m ${containerCommand}`
-    )    
+        let processArg = [
+                `run`,
+                `--rm`, // automatically remove after container exists.
+                // `--interactive --tty`, // allocate a terminal - this allows for interacting with the container process.
+                // `--volume ${application.hostPath}:${application.pathInContainer}`,
+                `--network-alias ${networkAlais}`,
+                `--network=${networkName}`,
+                `-P `
+                // `-P`
+            ]
+            // .concat(convertObjectToDockerEnvFlag(process.env))  // pass all envrinment variables - causes issues as some variables like `PATH` are related to the executed script
+            .concat([
+                `--name ${containerPrefix}`,
+                `${image}`
+            ])
+        console.log(
+            `%s \n %s \n %s`,
+            `\x1b[3m\x1b[2m > ${processCommand} ${processArg.join(' ')}\x1b[0m`,
+            `\t\x1b[3m\x1b[2mimage:\x1b[0m ${image}`,
+            `\t\x1b[3m\x1b[2mcommand:\x1b[0m ${containerCommand}`
+        )    
+        
+        let childProcess = spawn(processCommand, processArg, { 
+            detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
+            env: process.env // pass environment variables like process.env.PWD to spawn process
+        })
+        childProcess.on('error', function( err ){ throw err })
+        childProcess.on('exit', () => { 
+            console.log(`PID: Child ${childProcess.pid} terminated.`)
+            spawnSync('docker', [`rm --force ${containerPrefix}`], { 
+                detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit'],
+                env: process.env // pass environment variables like process.env.PWD to spawn process
+            })    
     
-    let childProcess = spawn(processCommand, processArg, { 
-        detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
-        env: process.env // pass environment variables like process.env.PWD to spawn process
-    })
-    childProcess.on('error', function( err ){ throw err })
-    childProcess.on('exit', () => { console.log(`PID: Child ${childProcess.pid} terminated.`) })
-    // childProcess.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
-    console.log(`PID: Child ${childProcess.pid}`)
+        })
+        // childProcess.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
+        console.log(`PID: Child ${childProcess.pid}`)
+        childProcessArray.push(childProcess)
+    }
 
     process.on('SIGINT', () => { // when docker is using `-it` option this event won't be fired in this process, as the SIGINT signal is passed directly to the docker container.
         console.log("• Caught interrupt signal - host machine level")
-        childProcess.kill('SIGINT')
+        killChildProcess(childProcessArray)
     })
+
+    function killChildProcess(childProcessArray) {
+        childProcessArray.forEach(childProcess => {
+            childProcess.kill('SIGINT')
+        })
+    }
 
     console.groupEnd()
 }
