@@ -46,15 +46,76 @@ export function runManagerAppInContainerWithClientApp(input) {
         workingDirectoryRelativeToApp = slash(path.relative(application.hostPath, hostWorkingDirectory)),
         workingDirectoryInContainer = slash(path.join(application.pathInContainer, workingDirectoryRelativeToApp)) // absolute container path of working directory 
 
-    let networkName = 'managerApp'
-    {
-        spawnSync('docker', [`network create ${networkName}`], { 
-            detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit'],
-            env: process.env // pass environment variables like process.env.PWD to spawn process
-        })    
+    let childProcessArray = [];
+    function killChildProcess({childProcesses = childProcessArray} = {}) {
+        childProcesses.forEach((childProcess, index) => {
+            childProcess.kill('SIGINT')
+            childProcess.kill('SIGTERM')
+            childProcesses.splice(index, 1) // remove item from array
+        })
+        // process.exit()
     }
 
-    let childProcessArray = []
+    // NETWORK
+    let networkName = 'managerApp'
+    {
+        let createNetwork = spawnSync('docker', [`network create ${networkName}`], { 
+            detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'ignore'],
+            env: process.env // pass environment variables like process.env.PWD to spawn process
+        })
+        if(createNetwork.status == 1) console.log('Docker network already exist.')
+    }
+
+    // RETHINKDB
+    {
+        let image = 'rethinkdb:latest', // this container should have docker client & docker-compose installed in.
+            processCommand = 'docker',
+            containerCommand = ``,
+            containerPrefix = 'managerApp_rehinkdb', 
+            networkAlais = 'rethinkdb'
+    
+        let processArg = [
+                `run`,
+                `--rm`, // automatically remove after container exists.
+                // `--interactive --tty`, // allocate a terminal - this allows for interacting with the container process.
+                // `--volume ${application.hostPath}:${application.pathInContainer}`,
+                `--network-alias ${networkAlais}`,
+                `--network=${networkName}`,
+                `-P `
+                // `-P`
+            ]
+            // .concat(convertObjectToDockerEnvFlag(process.env))  // pass all envrinment variables - causes issues as some variables like `PATH` are related to the executed script
+            .concat([
+                `--name ${containerPrefix}`,
+                `${image}`
+            ])
+        console.log(
+            `%s \n %s \n %s`,
+            `\x1b[3m\x1b[2m > ${processCommand} ${processArg.join(' ')}\x1b[0m`,
+            `\t\x1b[3m\x1b[2mimage:\x1b[0m ${image}`,
+            `\t\x1b[3m\x1b[2mcommand:\x1b[0m ${containerCommand}`
+        )    
+        
+        let childProcess = spawn(processCommand, processArg, { 
+            // detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
+            detached: false, shell: true, stdio: [ 'ignore', 'ignore', 'ignore' ],
+            env: process.env // pass environment variables like process.env.PWD to spawn process
+        })
+        childProcessArray.push(childProcess)
+        // childProcess.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
+        console.log(`\x1b[45m%s\x1b[0m`,`[NODE HOST MACHINE] PID: Child ${childProcess.pid}`)
+        childProcess.on('error', function( err ){ throw err })
+        childProcess.on('exit', () => {
+            console.log(`\x1b[41m%s\x1b[0m`,`[NODE HOST MACHINE] PID: Child ${childProcess.pid} terminated.`)
+            spawnSync('docker', [`kill ${containerPrefix}`], { 
+                detached: false, shell: true, stdio: 'inherit',
+                env: process.env // pass environment variables like process.env.PWD to spawn process
+            })    
+        })
+
+    }
+
+    // MANAGER APP
     {
         let image = 'myuserindocker/deployment-environment:simple_NodeDockerCompose', // this container should have docker client & docker-compose installed in.
             processCommand = 'docker',
@@ -94,74 +155,21 @@ export function runManagerAppInContainerWithClientApp(input) {
             detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
             env: process.env // pass environment variables like process.env.PWD to spawn process
         })
+        childProcessArray.push(childProcess)
+        // childProcess.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
+        console.log(`\x1b[45m%s\x1b[0m`,`[NODE HOST MACHINE] PID: Child ${childProcess.pid}`)
         childProcess.on('error', function( err ){ throw err })
         childProcess.on('exit', () => { 
-            console.log(`PID: Child ${childProcess.pid} terminated.`)
+            console.log(`\x1b[41m%s\x1b[0m`,`[NODE HOST MACHINE] PID: Child ${childProcess.pid} terminated.`)
             // if child process exits then remove all other running processes
-            killChildProcess(childProcessArray)
+            killChildProcess()
         })
-        // childProcess.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
-        console.log(`PID: Child ${childProcess.pid}`)
-        childProcessArray.push(childProcess)
     }
-
-    {
-        let image = 'rethinkdb:latest', // this container should have docker client & docker-compose installed in.
-            processCommand = 'docker',
-            containerCommand = ``,
-            containerPrefix = 'managerApp_rehinkdb', 
-            networkAlais = 'rethinkdb'
     
-        let processArg = [
-                `run`,
-                `--rm`, // automatically remove after container exists.
-                // `--interactive --tty`, // allocate a terminal - this allows for interacting with the container process.
-                // `--volume ${application.hostPath}:${application.pathInContainer}`,
-                `--network-alias ${networkAlais}`,
-                `--network=${networkName}`,
-                `-P `
-                // `-P`
-            ]
-            // .concat(convertObjectToDockerEnvFlag(process.env))  // pass all envrinment variables - causes issues as some variables like `PATH` are related to the executed script
-            .concat([
-                `--name ${containerPrefix}`,
-                `${image}`
-            ])
-        console.log(
-            `%s \n %s \n %s`,
-            `\x1b[3m\x1b[2m > ${processCommand} ${processArg.join(' ')}\x1b[0m`,
-            `\t\x1b[3m\x1b[2mimage:\x1b[0m ${image}`,
-            `\t\x1b[3m\x1b[2mcommand:\x1b[0m ${containerCommand}`
-        )    
-        
-        let childProcess = spawn(processCommand, processArg, { 
-            detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
-            env: process.env // pass environment variables like process.env.PWD to spawn process
-        })
-        childProcess.on('error', function( err ){ throw err })
-        childProcess.on('exit', () => { 
-            console.log(`PID: Child ${childProcess.pid} terminated.`)
-            spawnSync('docker', [`rm --force ${containerPrefix}`], { 
-                detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit'],
-                env: process.env // pass environment variables like process.env.PWD to spawn process
-            })    
-    
-        })
-        // childProcess.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
-        console.log(`PID: Child ${childProcess.pid}`)
-        childProcessArray.push(childProcess)
-    }
-
     process.on('SIGINT', () => { // when docker is using `-it` option this event won't be fired in this process, as the SIGINT signal is passed directly to the docker container.
-        console.log("• Caught interrupt signal - host machine level")
-        killChildProcess(childProcessArray)
+        console.log("• [NODE HOST MACHINE] Caught interrupt signal - host machine level")
+        killChildProcess()
     })
-
-    function killChildProcess(childProcessArray) {
-        childProcessArray.forEach(childProcess => {
-            childProcess.kill('SIGINT')
-        })
-    }
 
     console.groupEnd()
 }
