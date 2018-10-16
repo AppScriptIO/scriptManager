@@ -3,5 +3,7 @@
   "version": "1.0.0",
   "main": "entrypoint.js",
   "flat": false,
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+  }
 }

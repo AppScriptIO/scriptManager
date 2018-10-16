@@ -5,7 +5,7 @@ export function convertObjectToDockerEnvFlag(
     let dockerEnvStringArray = []
     Object.entries(envObject).forEach(
         ([key, value]) => {
-            dockerEnvStringArray.push(`--env "${escapeWithBackslash(key)}"="${escapeWithBackslash(value)}"`) // escape special characters
+            dockerEnvStringArray.push(`--env "${escapeWithBackslash(key)}=${escapeWithBackslash(value)}"`) // escape special characters
         }
     );
     

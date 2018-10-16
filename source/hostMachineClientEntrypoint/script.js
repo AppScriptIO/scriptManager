@@ -3,10 +3,20 @@ import operatingSystem from 'os'
 import path from 'path'
 import slash from 'slash' // convert backward Windows slash to Unix/Windows supported forward slash.
 import { setInterval } from 'timers';
+const parsedArg = require('yargs').argv
 import { convertObjectToDockerEnvFlag } from './utility/convertObjectToDockerEnvFlag.js'
 const containerPath = { // defined paths of volumes inside container.
     application: '/project/application'
 }
+
+parsedArg.env = (!Array.isArray(parsedArg.env)) ? [parsedArg.env] : parsedArg.env // transform `--env` value flags to array even when only one value present
+let exportEnvironmentArg = parsedArg.env.reduce((accumulator, currentValue) => {
+    if(process.env[currentValue]) // only keys that passed through environment variables
+        accumulator[currentValue] = process.env[currentValue] 
+    return accumulator
+}, {}) // get environment values and match them to keys in an object.
+
+console.log(convertObjectToDockerEnvFlag(exportEnvironmentArg))
 
 /**
  * Spins a container and passes entrypoint node script the relevant parameters used as: 
@@ -84,7 +94,6 @@ export function runManagerAppInContainerWithClientApp(input) {
                 `-P `
                 // `-P`
             ]
-            // .concat(convertObjectToDockerEnvFlag(process.env))  // pass all envrinment variables - causes issues as some variables like `PATH` are related to the executed script
             .concat([
                 `--name ${containerPrefix}`,
                 `${image}`
@@ -138,7 +147,7 @@ export function runManagerAppInContainerWithClientApp(input) {
                 `--env sshUsername=${operatingSystem.userInfo().username}`,
                 `--env PWD=${workingDirectoryInContainer}` // pass PWD absolute path as in container (convert host machine path to container path)
             ]
-            // .concat(convertObjectToDockerEnvFlag(process.env))  // pass all envrinment variables - causes issues as some variables like `PATH` are related to the executed script
+            .concat(convertObjectToDockerEnvFlag(exportEnvironmentArg))  // pass all envrinment variables - causes issues as some variables like `PATH` are related to the executed script, therefore should be filtered beforehand.
             .concat([
                 `--name ${containerPrefix}`,
                 `${image}`,
