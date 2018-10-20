@@ -16,8 +16,6 @@ let exportEnvironmentArg = parsedArg.env.reduce((accumulator, currentValue) => {
     return accumulator
 }, {}) // get environment values and match them to keys in an object.
 
-console.log(convertObjectToDockerEnvFlag(exportEnvironmentArg))
-
 /**
  * Spins a container and passes entrypoint node script the relevant parameters used as: 
  *  - Application root path
@@ -25,10 +23,10 @@ console.log(convertObjectToDockerEnvFlag(exportEnvironmentArg))
  */
 export function runManagerAppInContainerWithClientApp(input) {
     console.log(process.argv)
-    // TODO: Nested objects as paramaeters proxy implementation - create a proxy for functions to add support for function parameter destructuring of nested objects with preservation of objects and it`s properties, instead of creating individual separated parameters.
-    // use nested objects as function parameters - an implementation of destructuring that preserves nested structure of parameters and default values. TODO: Issue - doesn't throw if parameters not passed.
-    let application = {}, managerApp = {}, invokedDirectly;
+    // use nested objects as function parameters - an implementation of destructuring that preserves nested structure of parameters and default values. // ISSUE: doesn't throw if parameters not passed.
+    let application = {}, managerApp = {}, invokedDirectly, configurationAbsoluteHostPath;
     ({
+        configurationAbsoluteHostPath,
         application: {
             hostPath: application.hostPath, // the Windows host application path
             configuration: application.configuration,
@@ -51,10 +49,20 @@ export function runManagerAppInContainerWithClientApp(input) {
     // NOTE: creating an absolute path for managerApp assumes that the module exist under the application directory (/project/application).
     managerApp.absolutePathInContainer = slash(path.join(application.pathInContainer, managerApp.relativePathFromApplication)) // create an absolute path for managerApp which should be nested to application path.
 
+    let configurationAbsoluteContainerPath;
+    {
+        let relativePathFromApplication = path.relative(application.hostPath, configurationAbsoluteHostPath)
+        relativePathFromApplication = slash(relativePathFromApplication) // convert to Unix path from Windows path (change \ slash to /)
+        configurationAbsoluteContainerPath = slash(path.join(application.pathInContainer, relativePathFromApplication)) // create an absolute path which should be nested to application path.
+    }
+
     // resolve working directory path from host path to container path.
-    let hostWorkingDirectory = process.env.PWD,
-        workingDirectoryRelativeToApp = slash(path.relative(application.hostPath, hostWorkingDirectory)),
-        workingDirectoryInContainer = slash(path.join(application.pathInContainer, workingDirectoryRelativeToApp)) // absolute container path of working directory 
+    let hostWorkingDirectory_PWD = process.env.PWD,
+        workingDirectoryRelativeToApp_PWD = slash(path.relative(application.hostPath, hostWorkingDirectory_PWD)),
+        workingDirectoryInContainer_PWD = slash(path.join(application.pathInContainer, workingDirectoryRelativeToApp_PWD)) // absolute container path of working directory 
+    let hostWorkingDirectory_CWD = process.cwd(),
+        workingDirectoryRelativeToApp_CWD = slash(path.relative(application.hostPath, hostWorkingDirectory_CWD)),
+        workingDirectoryInContainer_CWD = slash(path.join(application.pathInContainer, workingDirectoryRelativeToApp_CWD)) // absolute container path of working directory 
 
     let childProcessArray = [];
     function killChildProcess({childProcesses = childProcessArray} = {}) {
@@ -145,7 +153,9 @@ export function runManagerAppInContainerWithClientApp(input) {
                 `-P`,
                 `--env applicationPathOnHostMachine=${application.hostPath}`,
                 `--env sshUsername=${operatingSystem.userInfo().username}`,
-                `--env PWD=${workingDirectoryInContainer}` // pass PWD absolute path as in container (convert host machine path to container path)
+                `--env PWD=${workingDirectoryInContainer_PWD}`, // pass PWD absolute path as in container (convert host machine path to container path)
+                `--workdir ${workingDirectoryInContainer_CWD}`,
+                `--env configurationPath=${configurationAbsoluteContainerPath}` // pass the absolute path of the configuration file
             ]
             .concat(convertObjectToDockerEnvFlag(exportEnvironmentArg))  // pass all envrinment variables - causes issues as some variables like `PATH` are related to the executed script, therefore should be filtered beforehand.
             .concat([

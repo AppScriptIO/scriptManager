@@ -11,17 +11,18 @@ const resolve = require('resolve')
 const slash = require('slash') // convert backward Windows slash to Unix/Windows supported forward slash.
 const moduleRootPath = `${__dirname}/../../../`
 const { runManagerAppInContainerWithClientApp } = require(moduleRootPath) 
+const ownConfig = require(path.join(moduleRootPath, 'setup/configuration/configuration.js')) // container manager config path
 const message_prefix = `\x1b[3m\x1b[2m•[${path.basename(__filename)} JS script]:\x1b[0m`
 console.group(`%s \x1b[33m%s\x1b[0m`,`${message_prefix}`,`ƒ container manager - container with volumes & requested entrypoint script`)
 
-function invoke({ configurationPath, managerAppHostRelativePath }) {
-    const configuration = require(configurationPath),
-          applicationRootPath = configuration.directory.application.hostAbsolutePath
-    console.log(configuration.directory.application.hostAbsolutePath)
+function invoke({ configurationPath, applicationConfig, managerAppHostRelativePath }) {
+
+    console.log(`Application root path: ${applicationConfig.directory.application.hostAbsolutePath}`)
     runManagerAppInContainerWithClientApp({
+        configurationAbsoluteHostPath: configurationPath,
         application: {
-            hostPath: configuration.directory.application.hostAbsolutePath, 
-            configuration: configuration
+            hostPath: applicationConfig.directory.application.hostAbsolutePath, 
+            configuration: applicationConfig
         },
         managerApp: {
             hostRelativePath: managerAppHostRelativePath
@@ -36,25 +37,61 @@ function invoke({ configurationPath, managerAppHostRelativePath }) {
  *  Shell: npx cliAdapter configuration=<relativePathToConfigurationFromPWD> <filename>
  */
 function cliInterface() {
-    var { parseKeyValuePairSeparatedBySymbolFromArray, combineKeyValueObjectIntoString } = require('@dependency/parseKeyValuePairSeparatedBySymbol')
+    let { parseKeyValuePairSeparatedBySymbolFromArray, combineKeyValueObjectIntoString } = require('@dependency/parseKeyValuePairSeparatedBySymbol')
+    const workingDirectoryPath = path.normalize(process.cwd())
     const namedArgs = parseKeyValuePairSeparatedBySymbolFromArray({ array: process.argv }) // ['x=y'] --> { x: y }
-    // assert(namedArgs.configuration, )
-    if(!namedArgs.configuration) console.log(`%c45455455`, 'color: #F99157;', 'X `configuration` parameter (relative configuration path from PWD) in command line argument must be set.')
-    let configurationPath = (namedArgs.configuration) ? 
-        path.join(process.cwd(), namedArgs.configuration) : 
-        path.join(process.cwd(), 'configuration'); // default seach in prim house
-    // configurationPath = slash(configurationPath)
-    process.argv = process.argv.filter(value => value !== `configuration=${namedArgs.configuration}`) // remove configuration paramter
-
-    let workingDirectoryPath = path.normalize(process.cwd()),
-        scriptPath = path.normalize(process.argv[1]),
+    let { applicationConfig, configurationPath } = getAppConfiguration({ configPathRelativeToCWD: namedArgs.configuration, workingDirectoryPath })
+    
+    let scriptPath = path.normalize(process.argv[1]),
         relativeScriptFromPWDPath = path.relative(workingDirectoryPath, scriptPath),
         nodeModulesPartialPath = ['node_modules'].concat(relativeScriptFromPWDPath.split('node_modules').slice(1)).join(''), // get path elements after first node_modules appearance i.e. /x/node_modules/y --> node_modules/y
         nodeModulesParentPartialPath = relativeScriptFromPWDPath.split('node_modules').shift(), // /x/node_modules/y --> /x/
         nodeModulesParentPath = path.join(workingDirectoryPath, nodeModulesParentPartialPath)
     const managerAppHostRelativePath = path.dirname( resolve.sync('@dependency/appDeploymentManager/package.json', { preserveSymlinks: true, basedir: nodeModulesParentPath }) ) // use 'resolve' module to allow passing 'preserve symlinks' option that is not supported by require.resolve module.
+    invoke({ configurationPath, applicationConfig, managerAppHostRelativePath})
+}
+
+/**
+ * Find configuration file according to specific assumptions and configuration of this module with preset defaults.
+ * Assumptions made: 
+ *  - 'configuration' argument set relative to current working directory.
+ * or
+ *  - current working directory is the location where 'configuration' module should be present (e.g. '<app path>/setup')
+ */
+function getAppConfiguration({ configPathRelativeToCWD, workingDirectoryPath } = {}) { 
+    let configurationPathArray = [], configurationAbsolutePath;
     
-    invoke({ configurationPath, managerAppHostRelativePath})
+    if(configPathRelativeToCWD) configurationPathArray.push(path.join(workingDirectoryPath, configPathRelativeToCWD))
+    
+    // default where the assumption that script executed in path '<app path>/setup'
+    if(Array.isArray(ownConfig.externalApp.defaultConfigPathRelativeToCWD)) {
+        configurationPathArray = configurationPathArray.concat(ownConfig.externalApp.defaultConfigPathRelativeToCWD.map(relativePath => path.join(workingDirectoryPath, relativePath)))        
+    } else {
+        configurationPathArray.push(path.join(workingDirectoryPath, ownConfig.externalApp.defaultConfigPathRelativeToCWD))
+    }
+    
+    let applicationConfig, errorAccumulator = [], index = 0;
+    while(index < configurationPathArray.length) {
+        let configurationPath = configurationPathArray[index]
+        try {
+            applicationConfig = require(configurationPath)
+            configurationAbsolutePath = configurationPath
+            break;
+        } catch(error) {
+            // try requiring all array loops
+            errorAccumulator.push(error)
+        }
+        index++
+    }
+    if(!applicationConfig) {
+        console.log(`%c45455455`, 'color: #F99157;', 'X `configuration` parameter (relative configuration path from PWD) in command line argument must be set.')
+        console.log(errorAccumulator)
+        throw new Error('• Lookup algorithm for app configuration path from current working directory failed.')
+    }
+
+    process.argv = process.argv.filter(value => value !== `configuration=${configPathRelativeToCWD}`) // remove configuration paramter
+
+    return { applicationConfig, configurationPath: configurationAbsolutePath }
 }
 
 cliInterface()

@@ -43,14 +43,15 @@ export async function run() {
 
     await installEntrypointModule({ entrypointModulePath })
 
-    // TODO: 
-    // Pass relevant parameters used to create container structure to the module.
-
     // require entrypoint module.
     try {
         console.log('\x1b[45m%s\x1b[0m \x1b[2m\x1b[3m%s\x1b[0m', `Module:`, `Running NodeJS entrypoint module`)
         console.log(`\t\x1b[2m\x1b[3m%s\x1b[0m \x1b[95m%s\x1b[0m`, `File path:`, `${entrypointModulePath}`)
-        let returned = require(entrypointModulePath) // pass arguments as application root path (rootPath: {  })
+        let entrypointModule = require(entrypointModulePath)
+        if(entrypointModule.cliAdapter) {
+            console.log('• Executing as module, rather than self-execution / directly.')
+            entrypointModule.cliAdapter({ configurationPath: process.env.configurationPath }) // Pass relevant parameters used to create container structure to the module. // pass arguments as application root path (rootPath: {  })
+        }
     } catch (error) {
         throw error
     }

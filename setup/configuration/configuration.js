@@ -43,7 +43,8 @@ module.exports = {
         configurationFilePath: `${externalAppRootFolder}/setup/configuration/configuration.js`,
         dependency: {
             appDeploymentLifecycle: externalAppAppDeploymentLifecycle
-        }
+        }, 
+        defaultConfigPathRelativeToCWD: ['./configuration', './setup/configuration']
     },
     managerApp: {
         rootFolder: managerAppRootFolder,
