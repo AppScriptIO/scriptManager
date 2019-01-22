@@ -22,11 +22,12 @@ let exportEnvironmentArg = parsedArg.env.reduce((accumulator, currentValue) => {
 
 
 /**
+ * Runs scriptManager in container with the target app as volume.
  * Spins a container and passes entrypoint node script the relevant parameters used as: 
  *  - Application root path
  *  - Manager path in container
  */
-export function runManagerAppInContainerWithClientApp(input) {
+module.exports = function runInContainer(input) {
 
     console.log(process.argv)
     // use nested objects as function parameters - an implementation of destructuring that preserves nested structure of parameters and default values. // ISSUE: doesn't throw if parameters not passed.

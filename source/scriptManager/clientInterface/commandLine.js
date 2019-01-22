@@ -15,7 +15,7 @@ import filesystem from 'fs'
 import ownConfiguration from '../../../configuration/configuration.js'
 import { parseKeyValuePairSeparatedBySymbolFromArray, combineKeyValueObjectIntoString } from '@dependency/parseKeyValuePairSeparatedBySymbol'
 import { configurationFileLookup } from '@dependency/configurationManagement'
-import { appManager } from '../'
+import { scriptManager } from '../'
 
 cliInterface()
 
@@ -24,8 +24,8 @@ cliInterface()
  * USAGE: 
  *  script invokation from shell using: npx || yarn run || <pathToScript>
  *  (`yarn run` is prefered over `npx` because it correctly catches errors, i.e. its implementation is more complete.)
- *  Shell: yarn run appManager configuration=<relativePathToConfigurationFromPWD> <filename>
- *  Shell: npx appManager configuration=<relativePathToConfigurationFromPWD> <filename>
+ *  Shell: yarn run scriptManager configuration=<relativePathToConfigurationFromPWD> <filename>
+ *  Shell: npx scriptManager configuration=<relativePathToConfigurationFromPWD> <filename>
  */
 function cliInterface({
   // key value pair object representing the passed values.
@@ -59,7 +59,7 @@ function cliInterface({
   // assret entrypoint configuration objects/options exist.
   console.assert(filesystem.existsSync(targetAppConfigPath), '\x1b[41m%s\x1b[0m', `❌ Configuration file doesn't exist in ${targetAppConfigPath}`)
 
-  appManager({
+  scriptManager({
     targetAppConfigPath,
     scriptKeyToInvoke
   }).catch(error => { console.error(error) })

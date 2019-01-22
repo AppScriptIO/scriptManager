@@ -1,6 +1,6 @@
 {
     "main": "./source/entrypoint/module/transpilation.entrypoint.js",
-    "name": "@dependency/appDeploymentManager",
+    "name": "@dependency/scriptManager",
     "version": "1.0.0",
     "workspaces": [
         "source",
@@ -26,7 +26,7 @@
         "yargs": "^12.0.2"
     },
     "bin": {
-        "runAppManager": "./source/entrypoint/cliAppManager/transpilation.entrypoint.js",
-        "runAppManagerInContainer": "./source/entrypoint/cliAppManagerInContainer/transpilation.entrypoint.js"
+        "scriptManager": "./source/entrypoint/cli/transpilation.entrypoint.js",
+        "scriptManagerInContainer": "./source/entrypoint/cliRunInContainer/transpilation.entrypoint.js"
     }
 }

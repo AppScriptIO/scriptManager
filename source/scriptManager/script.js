@@ -14,7 +14,7 @@ process.on('SIGINT', () => {
     process.exit(0)
 })
   
-export async function appManager({
+export async function scriptManager({
     targetAppConfigPath, // configuration object of the target application.
     scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
 }) {
