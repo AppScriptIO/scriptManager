@@ -1,1 +1,1 @@
-appDeploymentManager
+scriptManager
