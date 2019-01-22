@@ -24,3 +24,6 @@ Newer notes
     - Not to pollute the host OS environment.
     - For a more secure execution, preventing bugs from affecting the host OS.
     - To gain the benifit of controlled container with ability to manipulate folder structure with volumes and create symlinks easily. 
+
+Vocabulary: 
+    - *client interface* = an entrypoint in which the app is exposed through, that parameters can be passed to.

@@ -8,7 +8,4 @@
 const preserveSymlinkOption = 'NODE_PRESERVE_SYMLINKS'
 if(!process.env[preserveSymlinkOption]) throw new Error('Node\'s preserve symlink option must be turned on (NODE_PRESERVE_SYMLINKS)')
 
-// Transpilation - babelJSCompiler
-require('@dependency/javascriptTranspilation')({ babelConfigurationFile: 'serverRuntime.BabelConfig.js' })
-
 module.exports = require('./script.js')

@@ -5,6 +5,8 @@
  */
 const path = require('path')
 const configuration = require('./configuration/configuration.js')
-require('@dependency/hostCLIAdapter').hostCLIAdapter({
+const hostCLIAdapter = require('@dependency/hostCLIAdapter').hostCLIAdapter
+
+hostCLIAdapter({
     hostScriptPath: path.join(`${__dirname}/..`, configuration.script.hostMachine.path)
 })

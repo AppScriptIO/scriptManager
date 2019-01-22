@@ -3,10 +3,10 @@ const message_prefix = `\x1b[3m\x1b[2m•[${path.basename(__filename)} JS script
 console.group(`%s \x1b[33m%s\x1b[0m`,`${message_prefix}`,`ƒ container manager - container with volumes & requested entrypoint script`)
 
 import path from 'path'
-import { runManagerAppInContainerWithClientApp } from "../../.." // own package (@dependency/appDeploymentManager)
-const appDeploymentManagerPath = path.dirname( require.resolve('../../../package.json') ) // own package root path
+import { runManagerAppInContainerWithClientApp } from "../.." // own package (@dependency/appDeploymentManager)
+const appDeploymentManagerPath = path.dirname( require.resolve('../../package.json') ) // own package root path
 
 runManagerAppInContainerWithClientApp({
-    applicationHostPath: path.normalize(path.join(__dirname, '../../../')),
+    applicationHostPath: path.normalize(path.join(__dirname, '../..')),
     managerAppHostPath:  appDeploymentManagerPath
 })

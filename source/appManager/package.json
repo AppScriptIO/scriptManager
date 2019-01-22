@@ -1,7 +1,7 @@
 {
   "name": "@dependency/registryPackage",
   "version": "1.0.0",
-  "main": "entrypoint.js",
+  "main": "script.js",
   "flat": false,
   "license": "MIT",
   "dependencies": {
