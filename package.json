@@ -10,10 +10,10 @@
     ],
     "private": true,
     "dependencies": {
-        "@dependency/JSModuleTypeCheck": "https://github.com/AppScriptIO/JSModuleTypeCheck",
         "@dependency/addModuleResolutionPath": "https://github.com/AppScriptIO/addModuleResolutionPath",
+        "@dependency/configurationManagement": "https://github.com/AppScriptIO/configurationManagement",
         "@dependency/installNodeJSModule": "https://github.com/AppScriptIO/installNodeJSModule",
-        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation",
+        "@dependency/JSModuleTypeCheck": "https://github.com/AppScriptIO/JSModuleTypeCheck",
         "@dependency/moduleScopePattern": "https://github.com/AppScriptIO/moduleScopePattern",
         "@dependency/parseKeyValuePairSeparatedBySymbol": "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol",
         "child-process-promise": "^2.2.1",
@@ -24,6 +24,9 @@
         "slash": "^2.0.0",
         "upath": "^1.1.0",
         "yargs": "^12.0.2"
+    },
+    "devDependencies": {
+        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation"
     },
     "bin": {
         "scriptManager": "./source/entrypoint/cli/transpilation.entrypoint.js",

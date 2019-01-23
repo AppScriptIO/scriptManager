@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### Example for running app manager from a build container, rather than a Nodejs dependecy module of the client application.
+### Example for running app manager from a built image, rather than a Nodejs dependecy module of the client application.
 
 currentRelativeFilePath=$(dirname "$0")
 # pwd - current working directory in host machine.

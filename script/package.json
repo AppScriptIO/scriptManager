@@ -1,9 +1,11 @@
 {
-    "name": "@root/setup",
+    "name": "@root/script",
     "version": "1.0.0",
     "dependencies": {
-        "@dependency/hostCLIAdapter": "https://github.com/AppScriptIO/hostCLIAdapter"
+        "@dependency/scriptExecution": "https://github.com/AppScriptIO/scriptExecution",
+        "@dependency/parseKeyValuePairSeparatedBySymbol": "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol"
+
     },
-    "main": "./entrypoint.js"
+    "main": ""
 
 }
