@@ -1,1 +1,1 @@
-scriptManager
+./documentation/information.md
