@@ -6,7 +6,17 @@ const ownConfiguration = { // own project's configuration
             rootPath: path.normalize(`${__dirname}/..`)
         }
     },
-    script: [],
+    script: [
+        {
+            type: 'directory',
+            path: './script/'
+        }, 
+        {
+            type: 'script',
+            key: 'sleep',
+            path: './script/sleep.js'
+        },
+    ],
 }
 
 const functionalityConfig = { // the configuration affecting the behavior of source code module of this project.

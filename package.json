@@ -8,7 +8,7 @@
     },
     "scripts": {
         "setup": "yarn install --production=false", 
-        "test": "./source/entrypoint/cli/transpilation.entrypoint.js scriptKeyToInvoke=x"
+        "test": "./source/entrypoint/cli/transpilation.entrypoint.js scriptKeyToInvoke=sleep"
     },
     "workspaces": [
         "source",

@@ -9,7 +9,7 @@ let image = 'node:latest',
     containerCommand = 'sleep 1000000',
     processCommand = 'docker',
     containerPrefix = 'sleepscriptManager',
-    applicationHostPath = path.normalize(path.join(__dirname, '../../../'))
+    applicationHostPath = path.normalize(path.join(__dirname, '../'))
 
 let processArg = [
     `run`,
