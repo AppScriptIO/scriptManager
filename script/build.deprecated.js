@@ -29,7 +29,7 @@ let filteredNamedArgs = Object.keys(namedArgs)
                                 return obj;
                             }, {});
                             
-{    // run container manager
+{   // run container manager
     // # pull previously built image
     // # docker-compose -f $dockerComposeFilePath pull containerDeploymentManagement
     // # docker pull myuserindocker/deployment-environment:latest
