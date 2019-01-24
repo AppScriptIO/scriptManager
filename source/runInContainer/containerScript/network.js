@@ -1,5 +1,5 @@
 // NETWORK
-let networkName = 'managerApp'
+let networkName = 'scriptManager'
 {
     let createNetwork = spawnSync('docker', [`network create ${networkName}`], { 
         detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'ignore'],

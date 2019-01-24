@@ -7,17 +7,17 @@ import { convertWindowsPathToUnix } from '../../utility/convertWindowsPathToUnix
   
     let image = 'myuserindocker/deployment-environment:simple_NodeDockerCompose', // this container should have docker client & docker-compose installed in.
         processCommand = 'docker',
-        commandArgument = managerApp.commandArgument,
-        containerCommand = `node ${managerApp.absolutePathInContainer} ${commandArgument.join(' ')}`,
+        commandArgument = scriptManager.commandArgument,
+        containerCommand = `node ${scriptManager.absolutePathInContainer} ${commandArgument.join(' ')}`,
         // containerBashCommand = `bash -c "${containerCommandCase1} || ${containerCommandCase2}"`,
-        containerPrefix = 'managerApp'
+        containerPrefix = 'scriptManager'
     
     let processArg = [
             `run`,
             `--rm`, // automatically remove after container exists.
             `--interactive --tty`, // allocate a terminal - this allows for interacting with the container process.
             `--volume ${application.hostPath}:${application.pathInContainer}`,
-            // `--volume ${managerAppHostPath}:/project/managerApp`,
+            // `--volume ${scriptManagerHostPath}:/project/scriptManager`,
             `--volume /var/run/docker.sock:/var/run/docker.sock`,
             `--volume ${operatingSystem.homedir()}/.ssh:/project/.ssh`,
             `--network=${networkName}`,

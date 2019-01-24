@@ -1,7 +1,15 @@
 {
-    "main": "./source/entrypoint/module/transpilation.entrypoint.js",
     "name": "@dependency/scriptManager",
     "version": "1.0.0",
+    "main": "./source/entrypoint/module/transpilation.entrypoint.js",
+    "bin": {
+        "scriptManager": "./source/entrypoint/cli/transpilation.entrypoint.js",
+        "scriptManagerInContainer": "./source/entrypoint/cliRunInContainer/transpilation.entrypoint.js"
+    },
+    "scripts": {
+        "setup": "yarn install --production=false", 
+        "test": "./source/entrypoint/cli/transpilation.entrypoint.js scriptKeyToInvoke=x"
+    },
     "workspaces": [
         "source",
         "setup",
@@ -16,6 +24,7 @@
         "@dependency/JSModuleTypeCheck": "https://github.com/AppScriptIO/JSModuleTypeCheck",
         "@dependency/moduleScopePattern": "https://github.com/AppScriptIO/moduleScopePattern",
         "@dependency/parseKeyValuePairSeparatedBySymbol": "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol",
+        "@dependency/scriptExecution": "https://github.com/AppScriptIO/scriptExecution",
         "child-process-promise": "^2.2.1",
         "dockerode": "^2.5.1",
         "find-up": "^3.0.0",
@@ -27,9 +36,5 @@
     },
     "devDependencies": {
         "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation"
-    },
-    "bin": {
-        "scriptManager": "./source/entrypoint/cli/transpilation.entrypoint.js",
-        "scriptManagerInContainer": "./source/entrypoint/cliRunInContainer/transpilation.entrypoint.js"
     }
 }

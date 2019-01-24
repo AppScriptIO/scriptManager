@@ -8,7 +8,7 @@ console.group(`%s \x1b[33m%s\x1b[0m`,`${message_prefix}`,`ƒ run - container wit
 let image = 'myuserindocker/deployment-environment:latest',
     containerCommand = 'node /project/application/source/entrypoint.js run',
     processCommand = 'docker',
-    containerPrefix = 'sleepmanagerApp',
+    containerPrefix = 'sleepscriptManager',
     applicationHostPath = path.normalize(path.join(__dirname, '../../'))
 
 console.log(
@@ -22,7 +22,7 @@ let processArg = [
     `run`,
     `--volume /var/run/docker.sock:/var/run/docker.sock`,
     `--volume ${applicationHostPath}:/project/application`,
-    `--volume ${applicationHostPath}:/project/managerApp`,
+    `--volume ${applicationHostPath}:/project/scriptManager`,
     `--env "hostPath=${applicationHostPath}"`,
     `--env "entrypointConfigurationPath=/project/application/setup/entrypoint/configuration.js"`,
     `--name ${containerPrefix}`,

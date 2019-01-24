@@ -5,14 +5,14 @@ const message_prefix = `\x1b[3m\x1b[2m•[${path.basename(__filename)} JS script
 
 console.group(`%s \x1b[33m%s\x1b[0m`,`${message_prefix}`,`ƒ build`)
 
-const   projectName = 'managerApp', // project name
+const   projectName = 'scriptManager', // project name
         applicationHostPath = path.normalize(path.join(__dirname, '../../')),
         dockerComposeFilePath = path.join(__dirname, `../../container/containerDeployment.dockerCompose.yml`),
         namedArgs = parseKeyValuePairSeparatedBySymbolFromArray({ array: process.argv }), // all cli command arguments with "key=value" pair
         dockerYmlFileEnvironmentOption = [
             'entrypointConfigurationKey',
             'entrypointConfigurationPath',
-            'externalAppBasePath',
+            'targetAppBasePath',
             'dockerImageTag',
             'dockerImageTag_environment',
             'dockerImageTag_manager',

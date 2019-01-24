@@ -31,7 +31,7 @@ module.exports = function runInContainer(input) {
 
     console.log(process.argv)
     // use nested objects as function parameters - an implementation of destructuring that preserves nested structure of parameters and default values. // ISSUE: doesn't throw if parameters not passed.
-    let application = {}, managerApp = {}, invokedDirectly, configurationAbsoluteHostPath;
+    let application = {}, scriptManager = {}, invokedDirectly, configurationAbsoluteHostPath;
     ({
         configurationAbsoluteHostPath,
         application: {
@@ -39,22 +39,22 @@ module.exports = function runInContainer(input) {
             configuration: application.configuration,
             pathInContainer: application.pathInContainer = application.configuration.directory.application.containerAbsolutePath || containerPath.application
         },
-        // as default the managerApp should be installed (i.e. expected to be a dependency) as a dependency in a nested folder to the application.
-        managerApp: {
-            hostRelativePath: managerApp.hostRelativePath,
-            commandArgument: managerApp.commandArgument = process.argv,
+        // as default the scriptManager should be installed (i.e. expected to be a dependency) as a dependency in a nested folder to the application.
+        scriptManager: {
+            hostRelativePath: scriptManager.hostRelativePath,
+            commandArgument: scriptManager.commandArgument = process.argv,
         },
         invokedDirectly = false
     } = input) // destructure nested objects to the object properties themselves.
 
-    managerApp.commandArgument = (invokedDirectly) ? 
-        managerApp.commandArgument.slice(2) : // remove first 2 commands only - "<binPath>/node", "<path>/containerManager.js".
-        managerApp.commandArgument.slice(3), // remove first 2 commands - "<binPath>/node", "<path>/entrypoint.js" and the third host machine script name "containerManager"
+    scriptManager.commandArgument = (invokedDirectly) ? 
+        scriptManager.commandArgument.slice(2) : // remove first 2 commands only - "<binPath>/node", "<path>/containerManager.js".
+        scriptManager.commandArgument.slice(3), // remove first 2 commands - "<binPath>/node", "<path>/entrypoint.js" and the third host machine script name "containerManager"
 
-    managerApp.relativePathFromApplication = path.relative(application.hostPath, managerApp.hostRelativePath)
-    managerApp.relativePathFromApplication = slash(managerApp.relativePathFromApplication) // convert to Unix path from Windows path (change \ slash to /)
-    // NOTE: creating an absolute path for managerApp assumes that the module exist under the application directory (/project/application).
-    managerApp.absolutePathInContainer = slash(path.join(application.pathInContainer, managerApp.relativePathFromApplication)) // create an absolute path for managerApp which should be nested to application path.
+    scriptManager.relativePathFromApplication = path.relative(application.hostPath, scriptManager.hostRelativePath)
+    scriptManager.relativePathFromApplication = slash(scriptManager.relativePathFromApplication) // convert to Unix path from Windows path (change \ slash to /)
+    // NOTE: creating an absolute path for scriptManager assumes that the module exist under the application directory (/project/application).
+    scriptManager.absolutePathInContainer = slash(path.join(application.pathInContainer, scriptManager.relativePathFromApplication)) // create an absolute path for scriptManager which should be nested to application path.
 
     let configurationAbsoluteContainerPath;
     {

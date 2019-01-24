@@ -3,7 +3,7 @@
     let image = 'rethinkdb:latest', // this container should have docker client & docker-compose installed in.
         processCommand = 'docker',
         containerCommand = ``,
-        containerPrefix = 'managerApp_rehinkdb', 
+        containerPrefix = 'scriptManager_rehinkdb', 
         networkAlais = 'rethinkdb'
 
     let processArg = [

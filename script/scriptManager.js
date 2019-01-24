@@ -8,5 +8,5 @@ const ownRootPath = path.dirname( require.resolve('../package.json') ) // own pa
 
 runInContainer({
     applicationHostPath: path.normalize(path.join(__dirname, '../..')),
-    managerAppHostPath:  appDeploymentManagerPath
+    scriptManagerHostPath:  appDeploymentManagerPath
 })

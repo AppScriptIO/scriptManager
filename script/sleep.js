@@ -8,14 +8,14 @@ console.group(`%s \x1b[33m%s\x1b[0m`,`${message_prefix}`,`ƒ sleep - container w
 let image = 'node:latest',
     containerCommand = 'sleep 1000000',
     processCommand = 'docker',
-    containerPrefix = 'sleepmanagerApp',
+    containerPrefix = 'sleepscriptManager',
     applicationHostPath = path.normalize(path.join(__dirname, '../../../'))
 
 let processArg = [
     `run`,
     // `--volume /var/run/docker.sock:/var/run/docker.sock`,
     `--volume ${applicationHostPath}:/project/application`,
-    `--volume ${applicationHostPath}:/project/managerApp`,
+    `--volume ${applicationHostPath}:/project/scriptManager`,
     `--env hostPath=${applicationHostPath}`,
     `--name ${containerPrefix}`,
     `${image}`,

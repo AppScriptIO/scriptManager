@@ -7,7 +7,7 @@ const assert = require('assert')
 const resolve = require('resolve')
 const slash = require('slash') // convert backward Windows slash to Unix/Windows supported forward slash.
 const moduleRootPath = `${__dirname}/../../../`
-const { runManagerAppInContainerWithClientApp } = require(moduleRootPath) 
+const { runscriptManagerInContainerWithClientApp } = require(moduleRootPath) 
 const { parseKeyValuePairSeparatedBySymbolFromArray, combineKeyValueObjectIntoString } = require('@dependency/parseKeyValuePairSeparatedBySymbol')
 const ownConfig = require(path.join(moduleRootPath, 'configuration/configuration.js')) // container manager config path
 const { configurationFileLookup } = require(`@dependency/configurationManagement`)
@@ -31,7 +31,7 @@ function cliInterface() {
     let { configuration: applicationConfig, path: configurationPath } = configurationFileLookup({ 
         configurationPath: namedArgs.configuration, 
         currentDirectory,
-        configurationBasePath: ownConfig.externalApp.configurationBasePath
+        configurationBasePath: ownConfig.targetApp.configurationBasePath
     })
 
     // get symlink path
@@ -40,18 +40,18 @@ function cliInterface() {
         nodeModulesParentPartialPath = relativeScriptFromPWDPath.split('node_modules').shift(), // /x/node_modules/y --> /x/
         nodeModulesParentPath = path.join(currentDirectory, nodeModulesParentPartialPath)
 
-    const managerAppHostRelativePath = path.dirname( resolve.sync('@dependency/appDeploymentManager/package.json', { preserveSymlinks: true, basedir: nodeModulesParentPath }) ) // use 'resolve' module to allow passing 'preserve symlinks' option that is not supported by require.resolve module.
+    const scriptManagerHostRelativePath = path.dirname( resolve.sync('@dependency/appDeploymentManager/package.json', { preserveSymlinks: true, basedir: nodeModulesParentPath }) ) // use 'resolve' module to allow passing 'preserve symlinks' option that is not supported by require.resolve module.
 
     /** invoke the helper for script execution in container  */
     console.log(`Application root path: ${applicationConfig.directory.application.hostAbsolutePath}`)
-    runManagerAppInContainerWithClientApp({
+    runscriptManagerInContainerWithClientApp({
         configurationAbsoluteHostPath: configurationPath,
         application: {
             hostPath: applicationConfig.directory.application.hostAbsolutePath, 
             configuration: applicationConfig
         },
-        managerApp: {
-            hostRelativePath: managerAppHostRelativePath
+        scriptManager: {
+            hostRelativePath: scriptManagerHostRelativePath
         },
         invokedDirectly: (require.main === module) ? true : false
     })
