@@ -7,7 +7,7 @@
         "scriptManagerInContainer": "./source/entrypoint/cliRunInContainer/transpilation.entrypoint.js"
     },
     "scripts": {
-        "setup": "yarn install --production=false", 
+        "setup": "yarn install --production=false",
         "test": "./source/entrypoint/cli/transpilation.entrypoint.js scriptKeyToInvoke=sleep"
     },
     "workspaces": [
@@ -18,13 +18,14 @@
     ],
     "private": true,
     "dependencies": {
+        "@dependency/JSModuleTypeCheck": "https://github.com/AppScriptIO/JSModuleTypeCheck",
         "@dependency/addModuleResolutionPath": "https://github.com/AppScriptIO/addModuleResolutionPath",
         "@dependency/configurationManagement": "https://github.com/AppScriptIO/configurationManagement",
         "@dependency/installNodeJSModule": "https://github.com/AppScriptIO/installNodeJSModule",
-        "@dependency/JSModuleTypeCheck": "https://github.com/AppScriptIO/JSModuleTypeCheck",
         "@dependency/moduleScopePattern": "https://github.com/AppScriptIO/moduleScopePattern",
         "@dependency/parseKeyValuePairSeparatedBySymbol": "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol",
         "@dependency/scriptExecution": "https://github.com/AppScriptIO/scriptExecution",
+        "@script/scriptExecution": "https://github.com/AppScriptIO/scriptExecution",
         "child-process-promise": "^2.2.1",
         "dockerode": "^2.5.1",
         "find-up": "^3.0.0",
