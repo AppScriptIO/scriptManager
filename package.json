@@ -4,6 +4,7 @@
     "main": "./source/entrypoint/module/transpilation.entrypoint.js",
     "bin": {
         "scriptManager": "./source/entrypoint/cli/transpilation.entrypoint.js",
+        "run": "./source/entrypoint/cli/transpilation.entrypoint.js",
         "scriptManagerInContainer": "./source/entrypoint/cliRunInContainer/transpilation.entrypoint.js"
     },
     "scripts": {

@@ -62,7 +62,8 @@ function cliInterface({
   
   scriptManager({
     targetAppConfigPath,
-    scriptKeyToInvoke
+    scriptKeyToInvoke, 
+    jsToEvaluate: nodeCommandArgument.jsToEvaluate
   }).catch(error => { console.error(error) })
 
 

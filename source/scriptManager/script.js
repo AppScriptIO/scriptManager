@@ -13,6 +13,7 @@ process.on('SIGINT', () => {
 export async function scriptManager({
     targetAppConfigPath, // configuration object of the target application.
     scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
+    jsToEvaluate // js to evaluate on the required script => 'require(<scriptPath>)<evaluate js>'
 }) {
     let app = new Application({ configurationPath: targetAppConfigPath })
 
@@ -22,7 +23,7 @@ export async function scriptManager({
     let scriptConfigArray = app.configuration['script']
     console.assert(scriptConfigArray, '\x1b[41m%s\x1b[0m', `❌ config['script'] option in targetApp configuration must exist.`)
 
-    await scriptExecution({ script: scriptConfigArray, appRootPath: app.configuration.rootPath, scriptKeyToInvoke })
+    await scriptExecution({ script: scriptConfigArray, appRootPath: app.configuration.rootPath, scriptKeyToInvoke, jsToEvaluate })
             .catch(error => { console.error(error) })
 
 }
