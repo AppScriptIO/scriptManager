@@ -17,6 +17,8 @@ export async function scriptManager({
     scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
     jsCodeToEvaluate // js to evaluate on the required script => 'require(<scriptPath>)<evaluate js>'
 }) {
+    console.assert(scriptKeyToInvoke, '\x1b[41m%s\x1b[0m', '❌ `scriptKeyToInvoke` parameter must be set.')
+    
     let app = new Application({ configurationPath: targetAppConfigPath })
 
     // load entrypoint configuration and check for 'entrypoint' key (entrypoint key holds object with entrypoint information like file path mapping)
@@ -25,6 +27,5 @@ export async function scriptManager({
 
     await scriptExecution({ script: scriptConfigArray, appRootPath: app.configuration.rootPath, scriptKeyToInvoke, jsCodeToEvaluate })
             .catch(error => { console.error(error) })
-
 }
 

@@ -12,14 +12,29 @@ let nodeCommand = process.argv.slice(2) // remove first 2 commands - "<binPath>/
 import path from 'path'
 import assert from 'assert'
 import filesystem from 'fs'
+import vm from 'vm'
 import ownConfiguration from '../../../configuration/configuration.js'
 import { parseKeyValuePairSeparatedBySymbolFromArray, combineKeyValueObjectIntoString } from '@dependency/parseKeyValuePairSeparatedBySymbol'
 import { configurationFileLookup } from '@dependency/configurationManagement'
 import { scriptManager } from '../'
+import { loadStdin } from "../utility/loadStdin.js"
 
-cliInterface()
+// choose mode of the cli execution depending on the command line arguments
+;(function() {
+
+  // check if the first argument for is a Javascript code that should be evaluated on an imported module.
+  let firstCommandArgument = process.argv[2]
+  let symbolsForActingOnExports =  ['(', '.', '['] // exported modules could be function or objects, the operator to evaluate them starts with one of these symbols.
+  let isJSCodeToEvaluate = symbolsForActingOnExports.some(string => firstCommandArgument.startsWith(string))
+
+  if(isJSCodeToEvaluate) 
+    cliInterfaceEvaluate().catch(error => console.error(error))  
+  else 
+    cliInterface().catch(error => console.error(error))
+})()
 
 /**
+ * This implementation, in contrast to the other cliInterfaceEvaluate, required mapping the needed arguments to the method parameters.
  * distinguish between the ownConfiguration and the target application configuration.
  * USAGE: 
  *  script invokation from shell using: npx || yarn run || <pathToScript>
@@ -38,9 +53,46 @@ async function cliInterface({
   console.log(`\x1b[33m\x1b[1m\x1b[7m\x1b[36m%s\x1b[0m \x1b[2m\x1b[3m%s\x1b[0m`, `Script:`, `NodeJS App`)
 
   /** Argument initialization, validation, sanitization */
+  let standartInputData = await loadStdin() // in case in shell pipeline - get input
   let nodeCommandArgument = parseKeyValuePairSeparatedBySymbolFromArray({ array: commandArgument }) // parse `key=value` node command line arguments
   // target application's configuration file parameter hierarchy
-  targetAppConfigPath = targetAppConfigPath || nodeCommandArgument.targetConfig || envrironmentArgument.targetConfig
+  targetAppConfigPath = targetAppConfigPath || nodeCommandArgument.targetConfig || standartInputData /* stdin input */ || envrironmentArgument.targetConfig
+
+  // target application configuration file:
+  ;({ path: targetAppConfigPath } = configurationFileLookup({
+    configurationPath: targetAppConfigPath, 
+    currentDirectory,
+    configurationBasePath: ownConfiguration.targetApp.configurationBasePath
+  }))
+  // assret entrypoint configuration objects/options exist.
+  console.assert(require.resolve(targetAppConfigPath), '\x1b[41m%s\x1b[0m', `❌ Configuration file doesn't exist in ${targetAppConfigPath}`)
+
+    /**
+   * get arguments - API of accepted varibales from (priority list)
+   * 1. immediately passed argument in code. 
+   * 2. container passed environment variables
+   * 3. CLI arguments
+   */
+  scriptKeyToInvoke = scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke || nodeCommandArgument.scriptKeyToInvoke
+
+  await scriptManager({
+    targetAppConfigPath,
+    scriptKeyToInvoke, 
+    jsCodeToEvaluate: nodeCommandArgument.jsCodeToEvaluate
+  }).catch(error => { console.error(error) })
+
+}
+
+// allows for calling this module using javasript code from the commandline.
+async function cliInterfaceEvaluate({
+  // key value pair object representing the passed values.
+  envrironmentArgument = process.env,
+  commandArgument = process.argv,
+  scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
+  targetAppConfigPath, // the path to the configuration file of the target application.
+  currentDirectory = process.env.PWD, 
+  evaluateCodeForCurrentScript = commandArgument[2]
+} = {}) {
 
   /**
    * get arguments - API of accepted varibales from (priority list)
@@ -48,8 +100,10 @@ async function cliInterface({
    * 2. container passed environment variables
    * 3. CLI arguments
    */
-  scriptKeyToInvoke = scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke || nodeCommandArgument.scriptKeyToInvoke
-  console.assert(scriptKeyToInvoke, '\x1b[41m%s\x1b[0m', '❌ `scriptKeyToInvoke` parameter must be set.')
+  scriptKeyToInvoke = scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke
+
+  let standartInputData = await loadStdin() // in case in shell pipeline - get input
+  targetAppConfigPath = targetAppConfigPath || standartInputData || envrironmentArgument.targetConfig
 
   // target application configuration file:
   ;({ path: targetAppConfigPath } = configurationFileLookup({
@@ -60,10 +114,33 @@ async function cliInterface({
   // assret entrypoint configuration objects/options exist.
   console.assert(require.resolve(targetAppConfigPath), '\x1b[41m%s\x1b[0m', `❌ Configuration file doesn't exist in ${targetAppConfigPath}`)
   
-  scriptManager({
-    targetAppConfigPath,
-    scriptKeyToInvoke, 
-    jsCodeToEvaluate: nodeCommandArgument.jsCodeToEvaluate
-  }).catch(error => { console.error(error) })
+  let contextEnvironment = vm.createContext(Object.assign(
+    global,
+    {
+      _requiredModule_: async (...args) => { // similar to a curry function wrapper, setting default values
+        // process args setting default values
+        args[0] = Object.assign({
+          targetAppConfigPath, 
+
+        }, args[0])
+        await scriptManager(...args).catch(error => console.log(error))
+      }, 
+      
+    }
+  ))
+
+  try {
+      // where `_` available in context of vm, calls `scriptManager` module.
+      let vmScript = new vm.Script(`
+        _requiredModule_${evaluateCodeForCurrentScript}
+        `, { 
+          filename: path.resolve('../') /* add file to Node's event loop stack trace */ 
+        })
+    
+      vmScript.runInContext(contextEnvironment, { breakOnSigint: true /* break when Ctrl+C is received. */ })    
+  } catch (error) {
+      console.log(`❌ Running 'vm runInContext' code failed during execution.`)
+      throw error
+  }
 
 }
