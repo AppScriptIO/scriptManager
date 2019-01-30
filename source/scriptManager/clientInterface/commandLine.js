@@ -22,16 +22,19 @@ import { loadStdin } from "../utility/loadStdin.js"
 // choose mode of the cli execution depending on the command line arguments
 ;(function() {
 
-  // check if the first argument for is a Javascript code that should be evaluated on an imported module.
   let firstCommandArgument = process.argv[2]
-  let symbolsForActingOnExports =  ['(', '.', '['] // exported modules could be function or objects, the operator to evaluate them starts with one of these symbols.
-  let isJSCodeToEvaluate = symbolsForActingOnExports.some(string => firstCommandArgument.startsWith(string))
-
-  if(isJSCodeToEvaluate) 
+  // check if the first argument for is a Javascript code that should be evaluated on an imported module.
+  if(isJSCodeToEvaluate({ string: firstCommandArgument })) 
     cliInterfaceEvaluate().catch(error => console.error(error))  
   else 
     cliInterface().catch(error => console.error(error))
 })()
+
+// check if command argument (string) is a Javascript code that should be evaluated on an imported module. This allows for exposing modules to commandline with javascript code, i.e. execute js in commandline.
+function isJSCodeToEvaluate({ string }) {
+  let symbolsForActingOnExports =  ['(', '.', '['] // exported modules could be function or objects, the operator to evaluate them starts with one of these symbols.
+  let isJSCodeToEvaluate = symbolsForActingOnExports.some(symbol => string.startsWith(symbol))
+}
 
 /**
  * This implementation, in contrast to the other cliInterfaceEvaluate, required mapping the needed arguments to the method parameters.
@@ -48,15 +51,29 @@ async function cliInterface({
   commandArgument = process.argv,
   scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
   targetAppConfigPath, // the path to the configuration file of the target application.
-  currentDirectory = process.env.PWD
+  currentDirectory = process.env.PWD, 
+  jsCodeToEvaluate // javascript code to evaluate on target script. 
 } = {}) {
   console.log(`\x1b[33m\x1b[1m\x1b[7m\x1b[36m%s\x1b[0m \x1b[2m\x1b[3m%s\x1b[0m`, `Script:`, `NodeJS App`)
 
   /** Argument initialization, validation, sanitization */
   let standartInputData = await loadStdin() // in case in shell pipeline - get input
-  let nodeCommandArgument = parseKeyValuePairSeparatedBySymbolFromArray({ array: commandArgument }) // parse `key=value` node command line arguments
+  let parsedCommandArgument = parseKeyValuePairSeparatedBySymbolFromArray({ array: commandArgument }) // parse `key=value` node command line arguments
+
+  /**
+   * get arguments - API of accepted varibales from (priority list)
+   * 1. immediately passed argument in code. 
+   * 2. container passed environment variables
+   * 3. CLI arguments
+   */
+  scriptKeyToInvoke = scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke || parsedCommandArgument.scriptKeyToInvoke 
+                        || commandArgument[2]   // allow for shorthand command call.
+
+  jsCodeToEvaluate = parsedCommandArgument.jsCodeToEvaluate 
+                      || commandArgument[3]   // allow for shorthand command call.
+
   // target application's configuration file parameter hierarchy
-  targetAppConfigPath = targetAppConfigPath || nodeCommandArgument.targetConfig || standartInputData /* stdin input */ || envrironmentArgument.targetConfig
+  targetAppConfigPath = targetAppConfigPath || parsedCommandArgument.targetConfig || standartInputData /* stdin input */ || envrironmentArgument.targetConfig
 
   // target application configuration file:
   ;({ path: targetAppConfigPath } = configurationFileLookup({
@@ -67,18 +84,10 @@ async function cliInterface({
   // assret entrypoint configuration objects/options exist.
   console.assert(require.resolve(targetAppConfigPath), '\x1b[41m%s\x1b[0m', `❌ Configuration file doesn't exist in ${targetAppConfigPath}`)
 
-    /**
-   * get arguments - API of accepted varibales from (priority list)
-   * 1. immediately passed argument in code. 
-   * 2. container passed environment variables
-   * 3. CLI arguments
-   */
-  scriptKeyToInvoke = scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke || nodeCommandArgument.scriptKeyToInvoke
-
   await scriptManager({
     targetAppConfigPath,
     scriptKeyToInvoke, 
-    jsCodeToEvaluate: nodeCommandArgument.jsCodeToEvaluate
+    jsCodeToEvaluate, 
   }).catch(error => { console.error(error) })
 
 }
