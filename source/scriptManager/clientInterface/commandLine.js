@@ -27,7 +27,7 @@ cliInterface()
  *  Shell: yarn run scriptManager configuration=<relativePathToConfigurationFromPWD> <filename>
  *  Shell: npx scriptManager configuration=<relativePathToConfigurationFromPWD> <filename>
  */
-function cliInterface({
+async function cliInterface({
   // key value pair object representing the passed values.
   envrironmentArgument = process.env,
   commandArgument = process.argv,
@@ -63,8 +63,7 @@ function cliInterface({
   scriptManager({
     targetAppConfigPath,
     scriptKeyToInvoke, 
-    jsToEvaluate: nodeCommandArgument.jsToEvaluate
+    jsCodeToEvaluate: nodeCommandArgument.jsCodeToEvaluate
   }).catch(error => { console.error(error) })
-
 
 }
