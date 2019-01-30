@@ -1,0 +1,1 @@
+- [consider this change]: rename `jsCodeToEvaluate` to a term closer to the meaning of instantiating a js exported module. Research for the ways a module could be instantiated, i.e. as an object, or as a function executed directly.
