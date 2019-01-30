@@ -83,7 +83,8 @@ module.exports = function runInContainer(input) {
 
     // create container
     console.log('creating containers !!!!!')
-    
+    // TODO: Add require statements from directory `./containerScript`
+
     process.on('SIGINT', () => { // when docker is using `-it` option this event won't be fired in this process, as the SIGINT signal is passed directly to the docker container.
         console.log("• [NODE HOST MACHINE] Caught interrupt signal - host machine level")
         killChildProcess()
