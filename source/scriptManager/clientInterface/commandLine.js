@@ -33,7 +33,7 @@ import { loadStdin } from "../utility/loadStdin.js"
 // check if command argument (string) is a Javascript code that should be evaluated on an imported module. This allows for exposing modules to commandline with javascript code, i.e. execute js in commandline.
 function isJSCodeToEvaluate({ string }) {
   let symbolsForActingOnExports =  ['(', '.', '['] // exported modules could be function or objects, the operator to evaluate them starts with one of these symbols.
-  let isJSCodeToEvaluate = symbolsForActingOnExports.some(symbol => string.startsWith(symbol))
+  return symbolsForActingOnExports.some(symbol => string.startsWith(symbol))
 }
 
 /**
