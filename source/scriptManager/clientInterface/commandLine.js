@@ -73,6 +73,9 @@ async function cliInterface({
   // target application's configuration file parameter hierarchy
   targetAppConfigPath = targetAppConfigPath || parsedCommandArgument.targetConfig || standartInputData /* stdin input */ || envrironmentArgument.targetConfig
 
+  // create command arguments for target script. The path to the script should be changed after script lookup by succeeding modules.
+  process.argv = [process.argv[0], `${scriptKeyToInvoke}` /* should be substituted by full target script path after lookup */, ...targetScriptCommandArgument] 
+
   // target application configuration file:
   ;({ path: targetAppConfigPath } = configurationFileLookup({
     configurationPath: targetAppConfigPath, 
