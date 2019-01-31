@@ -92,27 +92,25 @@ async function cliInterface({
 
 }
 
-// allows for calling this module using javasript code from the commandline.
+/** 
+ * Allows for calling this module `scriptManager` using javasript code from the commandline.
+ * In this case there are no parsed command arguments, only the first argument that contains JS code with all necessary parameters.
+ * Example: 
+ *  `yarn run scriptManager "({ scriptKeyToInvoke: 'sleep' })"`
+ *  `yarn run scriptManager "({ scriptKeyToInvoke: 'sleep', jsCodeToEvaluate: '.setInterval()' })"`
+ */
 async function cliInterfaceEvaluate({
   // key value pair object representing the passed values.
-  envrironmentArgument = process.env,
-  commandArgument = process.argv,
   scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
   targetAppConfigPath, // the path to the configuration file of the target application.
   currentDirectory = process.env.PWD, 
-  evaluateCodeForCurrentScript = commandArgument[2]
+  codeToEvaluateForOwnModule = process.argv[2],
+  envrironmentArgument = process.env,
 } = {}) {
-
-  /**
-   * get arguments - API of accepted varibales from (priority list)
-   * 1. immediately passed argument in code. 
-   * 2. container passed environment variables
-   * 3. CLI arguments
-   */
-  scriptKeyToInvoke = scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke
 
   let standartInputData = await loadStdin() // in case in shell pipeline - get input
   targetAppConfigPath = targetAppConfigPath || standartInputData || envrironmentArgument.targetConfig
+  scriptKeyToInvoke = scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke
 
   // target application configuration file:
   ;({ path: targetAppConfigPath } = configurationFileLookup({
@@ -130,7 +128,7 @@ async function cliInterfaceEvaluate({
         // process args setting default values
         args[0] = Object.assign({
           targetAppConfigPath, 
-
+          scriptKeyToInvoke
         }, args[0])
         await scriptManager(...args).catch(error => console.log(error))
       }, 
@@ -141,7 +139,7 @@ async function cliInterfaceEvaluate({
   try {
       // where `_` available in context of vm, calls `scriptManager` module.
       let vmScript = new vm.Script(`
-        _requiredModule_${evaluateCodeForCurrentScript}
+        _requiredModule_${codeToEvaluateForOwnModule}
         `, { 
           filename: path.resolve('../') /* add file to Node's event loop stack trace */ 
         })
