@@ -18,6 +18,8 @@ import { parseKeyValuePairSeparatedBySymbolFromArray, combineKeyValueObjectIntoS
 import { configurationFileLookup } from '@dependency/configurationManagement'
 import { scriptManager } from '../'
 import { loadStdin } from "../utility/loadStdin.js"
+import { isJSCodeToEvaluate } from '../utility/isJSCodeToEvaluate.js'
+import { splitArrayToTwoByDelimiter } from "../utility/splitArray.js"
 
 // choose mode of the cli execution depending on the command line arguments
 ;(function() {
@@ -30,35 +32,32 @@ import { loadStdin } from "../utility/loadStdin.js"
     cliInterface().catch(error => console.error(error))
 })()
 
-// check if command argument (string) is a Javascript code that should be evaluated on an imported module. This allows for exposing modules to commandline with javascript code, i.e. execute js in commandline.
-function isJSCodeToEvaluate({ string }) {
-  let symbolsForActingOnExports =  ['(', '.', '['] // exported modules could be function or objects, the operator to evaluate them starts with one of these symbols.
-  return symbolsForActingOnExports.some(symbol => string.startsWith(symbol))
-}
-
 /**
- * This implementation, in contrast to the other cliInterfaceEvaluate, required mapping the needed arguments to the method parameters.
+ * This implementation, in contrast to the other cliInterfaceEvaluate, requires mapping the needed commandline parsed arguments to the method parameters.
  * distinguish between the ownConfiguration and the target application configuration.
  * USAGE: 
- *  script invokation from shell using: npx || yarn run || <pathToScript>
- *  (`yarn run` is prefered over `npx` because it correctly catches errors, i.e. its implementation is more complete.)
- *  Shell: yarn run scriptManager configuration=<relativePathToConfigurationFromPWD> <filename>
- *  Shell: npx scriptManager configuration=<relativePathToConfigurationFromPWD> <filename>
+ *  script invokation from shell using: npx || yarn run || <pathToScript e.g. './node_modules/.bin/scriptManager'>   (`yarn run` is prefered over `npx` because it correctly catches errors, i.e. its implementation is more complete.)
+ *  $ `yarn run scriptManager targetAppConfigPath=<> scriptKeyToInvoke=<filename> jsCodeToEvaluate=<js code> -- <arguments passed to target script>`
+ *  where `--` means the end of own module args and beginning of target script args (a slightlt different meaning than the convention in other shell scripts https://serverfault.com/questions/114897/what-does-double-dash-mean-in-this-shell-command).
+ *  shorthand $ `yarn run scriptManager <scriptToInvoke> <jsCodeToEvaluate>` e.g. `yarn run scriptManager sleep '.setInterval()'`
  */
 async function cliInterface({
   // key value pair object representing the passed values.
   envrironmentArgument = process.env,
-  commandArgument = process.argv,
-  scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
-  targetAppConfigPath, // the path to the configuration file of the target application.
+  commandArgument = process.argv.slice(2),
   currentDirectory = process.env.PWD, 
-  jsCodeToEvaluate // javascript code to evaluate on target script. 
+  scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
+  jsCodeToEvaluate, // javascript code to evaluate on target script. 
+  targetAppConfigPath, // the path to the configuration file of the target application. relative path to target project configuration from current working directory.
+  argumentDelimiter = '--', // delimiter symbol for differentiating own arguments from the target script arguments.
 } = {}) {
   console.log(`\x1b[33m\x1b[1m\x1b[7m\x1b[36m%s\x1b[0m \x1b[2m\x1b[3m%s\x1b[0m`, `Script:`, `NodeJS App`)
 
   /** Argument initialization, validation, sanitization */
   let standartInputData = await loadStdin() // in case in shell pipeline - get input
-  let parsedCommandArgument = parseKeyValuePairSeparatedBySymbolFromArray({ array: commandArgument }) // parse `key=value` node command line arguments
+  // split array by `--` delimiter
+  let [ownCommandArgument, targetScriptCommandArgument] = splitArrayToTwoByDelimiter({ array: commandArgument, delimiter: argumentDelimiter })
+  let parsedCommandArgument = parseKeyValuePairSeparatedBySymbolFromArray({ array: ownCommandArgument }) // parse `key=value` node command line arguments
 
   /**
    * get arguments - API of accepted varibales from (priority list)
@@ -67,10 +66,9 @@ async function cliInterface({
    * 3. CLI arguments
    */
   scriptKeyToInvoke = scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke || parsedCommandArgument.scriptKeyToInvoke 
-                        || commandArgument[2]   // allow for shorthand command call.
-
+                        || ownCommandArgument[0]   // allow for shorthand command call.
   jsCodeToEvaluate = parsedCommandArgument.jsCodeToEvaluate 
-                      || commandArgument[3]   // allow for shorthand command call.
+                      || ownCommandArgument[1]   // allow for shorthand command call.
 
   // target application's configuration file parameter hierarchy
   targetAppConfigPath = targetAppConfigPath || parsedCommandArgument.targetConfig || standartInputData /* stdin input */ || envrironmentArgument.targetConfig
