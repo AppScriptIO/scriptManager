@@ -43,7 +43,7 @@ function cliInterface() {
     const scriptManagerHostRelativePath = path.dirname( resolve.sync('@dependency/appDeploymentManager/package.json', { preserveSymlinks: true, basedir: nodeModulesParentPath }) ) // use 'resolve' module to allow passing 'preserve symlinks' option that is not supported by require.resolve module.
 
     /** invoke the helper for script execution in container  */
-    console.log(`Application root path: ${applicationConfig.directory.application.hostAbsolutePath}`)
+    console.log(`Project root path: ${applicationConfig.directory.application.hostAbsolutePath}`)
     runscriptManagerInContainerWithClientApp({
         configurationAbsoluteHostPath: configurationPath,
         application: {

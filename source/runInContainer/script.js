@@ -24,7 +24,7 @@ let exportEnvironmentArg = parsedArg.env.reduce((accumulator, currentValue) => {
 /**
  * Runs scriptManager in container with the target app as volume.
  * Spins a container and passes entrypoint node script the relevant parameters used as: 
- *  - Application root path
+ *  - Project root path
  *  - Manager path in container
  */
 module.exports = function runInContainer(input) {
@@ -51,16 +51,16 @@ module.exports = function runInContainer(input) {
         scriptManager.commandArgument.slice(2) : // remove first 2 commands only - "<binPath>/node", "<path>/containerManager.js".
         scriptManager.commandArgument.slice(3), // remove first 2 commands - "<binPath>/node", "<path>/entrypoint.js" and the third host machine script name "containerManager"
 
-    scriptManager.relativePathFromApplication = path.relative(application.hostPath, scriptManager.hostRelativePath)
-    scriptManager.relativePathFromApplication = slash(scriptManager.relativePathFromApplication) // convert to Unix path from Windows path (change \ slash to /)
+    scriptManager.relativePathFromProject = path.relative(application.hostPath, scriptManager.hostRelativePath)
+    scriptManager.relativePathFromProject = slash(scriptManager.relativePathFromProject) // convert to Unix path from Windows path (change \ slash to /)
     // NOTE: creating an absolute path for scriptManager assumes that the module exist under the application directory (/project/application).
-    scriptManager.absolutePathInContainer = slash(path.join(application.pathInContainer, scriptManager.relativePathFromApplication)) // create an absolute path for scriptManager which should be nested to application path.
+    scriptManager.absolutePathInContainer = slash(path.join(application.pathInContainer, scriptManager.relativePathFromProject)) // create an absolute path for scriptManager which should be nested to application path.
 
     let configurationAbsoluteContainerPath;
     {
-        let relativePathFromApplication = path.relative(application.hostPath, configurationAbsoluteHostPath)
-        relativePathFromApplication = slash(relativePathFromApplication) // convert to Unix path from Windows path (change \ slash to /)
-        configurationAbsoluteContainerPath = slash(path.join(application.pathInContainer, relativePathFromApplication)) // create an absolute path which should be nested to application path.
+        let relativePathFromProject = path.relative(application.hostPath, configurationAbsoluteHostPath)
+        relativePathFromProject = slash(relativePathFromProject) // convert to Unix path from Windows path (change \ slash to /)
+        configurationAbsoluteContainerPath = slash(path.join(application.pathInContainer, relativePathFromProject)) // create an absolute path which should be nested to application path.
     }
 
     // resolve working directory path from host path to container path.

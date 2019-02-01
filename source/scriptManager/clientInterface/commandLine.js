@@ -30,7 +30,7 @@ cliInterface().catch(error => { console.error(error) })
  *  2. parsed arguments interface: This implementation, in contrast to the other code evaluation interface, requires mapping the needed commandline parsed arguments to the method parameters.
  *     USAGE: 
  *      script invokation from shell using: npx || yarn run || <pathToScript e.g. './node_modules/.bin/scriptManager'>   (`yarn run` is prefered over `npx` because it correctly catches errors, i.e. its implementation is more complete.)
- *      $ `yarn run scriptManager targetAppConfigPath=<> scriptKeyToInvoke=<filename> jsCodeToEvaluate=<js code> - <arguments passed to target script>`
+ *      $ `yarn run scriptManager targetProjectConfigPath=<> scriptKeyToInvoke=<filename> jsCodeToEvaluate=<js code> - <arguments passed to target script>`
  *      where `-` means the end of own module args and beginning of target script args (a slightlt different meaning than the convention in other shell scripts https://serverfault.com/questions/114897/what-does-double-dash-mean-in-this-shell-command).
  *      shorthand $ `yarn run scriptManager <scriptToInvoke> <jsCodeToEvaluate> - <arguments to target script>` e.g. `yarn run scriptManager sleep '.setInterval()'`
  * 
@@ -41,7 +41,7 @@ async function cliInterface({
   commandArgument = process.argv.slice(2), /* remove first two arguments `runtime`, `module path` */
   currentDirectory = process.env.PWD, 
   scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
-  targetAppConfigPath, // the path to the configuration file of the target application. relative path to target project configuration from current working directory.
+  targetProjectConfigPath, // the path to the configuration file of the target application. relative path to target project configuration from current working directory.
   argumentDelimiter = '-', // delimiter symbol for differentiating own arguments from the target script arguments. using `-` instead of `--` because yarn removes the double slash (although in future version it won't, as was mentioned).
   jsCodeToEvaluate
 } = []) {
@@ -63,7 +63,7 @@ async function cliInterface({
   const isEvaluateCodeInterface = isJSCodeToEvaluate({ string: nonPairArgument[0] })
 
   if(isEvaluateCodeInterface) {
-    targetAppConfigPath = targetAppConfigPath || standartInputData || envrironmentArgument.targetConfig
+    targetProjectConfigPath = targetProjectConfigPath || standartInputData || envrironmentArgument.targetConfig
     scriptKeyToInvoke = scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke  
   } else {
     scriptKeyToInvoke = scriptKeyToInvoke || parsedCommandArgument.scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke 
@@ -72,29 +72,29 @@ async function cliInterface({
                         || nonPairArgument[1]   // allow for shorthand command call.
   
     // target application's configuration file parameter hierarchy
-    targetAppConfigPath = targetAppConfigPath || parsedCommandArgument.targetConfig || standartInputData /* stdin input */ || envrironmentArgument.targetConfig
+    targetProjectConfigPath = targetProjectConfigPath || parsedCommandArgument.targetConfig || standartInputData /* stdin input */ || envrironmentArgument.targetConfig
   
     process.argv[1] = scriptKeyToInvoke || process.argv[1] //The path to the script should be changed after script lookup by succeeding modules.
   }  
 
   // target application configuration file:
-  ;({ path: targetAppConfigPath } = configurationFileLookup({
-    configurationPath: targetAppConfigPath, 
+  ;({ path: targetProjectConfigPath } = configurationFileLookup({
+    configurationPath: targetProjectConfigPath, 
     currentDirectory,
     configurationBasePath: ownConfiguration.targetApp.configurationBasePath
   }))
   // assret entrypoint configuration objects/options exist.
-  console.assert(require.resolve(targetAppConfigPath), '\x1b[41m%s\x1b[0m', `❌ Configuration file doesn't exist in ${targetAppConfigPath}`)
+  console.assert(require.resolve(targetProjectConfigPath), '\x1b[41m%s\x1b[0m', `❌ Configuration file doesn't exist in ${targetProjectConfigPath}`)
 
   // check if the first argument for is a Javascript code that should be evaluated on an imported module.
   if(isEvaluateCodeInterface) 
     evaluateCodeInterface({
         codeToEvaluateForOwnModule: ownCommandArgument[0], 
-        defaultEvaluateCallValueForFirstParameter: { targetAppConfigPath, scriptKeyToInvoke, jsCodeToEvaluate }
+        defaultEvaluateCallValueForFirstParameter: { targetProjectConfigPath, scriptKeyToInvoke, jsCodeToEvaluate }
     }).catch(error => console.error(error))  
   else 
     await scriptManager({
-      targetAppConfigPath,
+      targetProjectConfigPath,
       scriptKeyToInvoke, 
       jsCodeToEvaluate, 
     }).catch(error => { console.error(error) })
