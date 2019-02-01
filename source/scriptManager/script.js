@@ -25,7 +25,12 @@ export async function scriptManager({
     let scriptConfigArray = app.configuration['script']
     console.assert(scriptConfigArray, '\x1b[41m%s\x1b[0m', `❌ config['script'] option in targetApp configuration must exist.`)
 
-    await scriptExecution({ script: scriptConfigArray, appRootPath: app.configuration.rootPath, scriptKeyToInvoke, jsCodeToEvaluate })
-            .catch(error => { console.error(error) })
+    await scriptExecution({
+        script: scriptConfigArray, 
+        appRootPath: app.configuration.rootPath, 
+        scriptKeyToInvoke, 
+        jsCodeToEvaluate, 
+        executeWithParameter: [{ project: app }] // pass project api
+    }).catch(error => { console.error(error) })
 }
 
