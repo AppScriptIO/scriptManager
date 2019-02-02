@@ -2,7 +2,7 @@
 import filesystem from 'fs'
 import path from 'path'
 import ownConfiguration from '../../configuration/configuration.js'
-import { scriptExecution } from '@dependency/scriptExecution'
+import { execute, lookup } from '@dependency/scriptExecution'
 import { Project } from './Project.class.js'
 
 process.on('SIGINT', () => { 
@@ -25,12 +25,16 @@ export async function scriptManager({
     let scriptConfigArray = project.configuration['script']
     console.assert(scriptConfigArray, '\x1b[41m%s\x1b[0m', `❌ config['script'] option in targetProject configuration must exist.`)
 
-    await scriptExecution({
+    let scriptConfiguration = await lookup({
         script: scriptConfigArray, 
         projectRootPath: project.configuration.rootPath, 
-        scriptKeyToInvoke, 
+        scriptKeyToInvoke,  
+    }).catch(error => { throw error })
+
+    await execute({ // Assuming script is synchronous 
+        scriptConfig: scriptConfiguration, 
         jsCodeToEvaluate, 
-        executeWithParameter: { 
+        parameter: { 
             api: {
                 project: project 
             } // pass project api
