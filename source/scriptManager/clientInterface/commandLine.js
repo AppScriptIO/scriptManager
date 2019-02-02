@@ -33,6 +33,9 @@ cliInterface().catch(error => { console.error(error) })
  *      $ `yarn run scriptManager targetProjectConfigPath=<> scriptKeyToInvoke=<filename> jsCodeToEvaluate=<js code> - <arguments passed to target script>`
  *      where `-` means the end of own module args and beginning of target script args (a slightlt different meaning than the convention in other shell scripts https://serverfault.com/questions/114897/what-does-double-dash-mean-in-this-shell-command).
  *      shorthand $ `yarn run scriptManager <scriptToInvoke> <jsCodeToEvaluate> - <arguments to target script>` e.g. `yarn run scriptManager sleep '.setInterval()'`
+ *       `yarn scriptManager test ".runTest({ testPath: '${PWD}/test', targetProject: api.project })"` // where `api` is exposed by the scriptManager to the evaluated script.
+ *       scriptConfig adapterFunction + `yarn scriptManager test ".runTest({ testPath: '${PWD}/test' })"` // where an adapter is provided in scriptConfig to set the 'targetProject' from the api of scriptManager.
+ * 
  * 
  * [note] distinguish between the ownConfiguration and the target application configuration.
  */

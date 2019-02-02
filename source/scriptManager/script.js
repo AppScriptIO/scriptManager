@@ -30,7 +30,11 @@ export async function scriptManager({
         projectRootPath: project.configuration.rootPath, 
         scriptKeyToInvoke, 
         jsCodeToEvaluate, 
-        executeWithParameter: [{ project: project }] // pass project api
+        executeWithParameter: { 
+            api: {
+                project: project 
+            } // pass project api
+        }
     }).catch(error => { console.error(error) })
 }
 
