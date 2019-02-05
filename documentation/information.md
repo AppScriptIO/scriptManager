@@ -10,7 +10,7 @@ _Dependencies:_
 - _[configurationManagement](https://github.com/AppScriptIO/configurationManagement) module to lookup and load configuration file._
 ____
 
-## Use cases for running `scriptManager` in a container as opposed to on the host machine: 
+## Use cases for running `scriptManager` in a container as opposed to directly on the host machine OS: 
 - Ease the development of `scriptManager` for a specific OS environment (i.e. Linux).
 - Not to pollute the host OS environment.
 - For a more secure execution, preventing bugs from affecting the host OS & filesystem outside the target project`s root.
