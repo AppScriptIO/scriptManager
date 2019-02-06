@@ -1,11 +1,7 @@
 {
     "name": "@root/script",
-    "version": "1.0.0",
+    "version": "0.0.0",
+    "main": "",
     "dependencies": {
-        "@dependency/scriptExecution": "https://github.com/AppScriptIO/scriptExecution",
-        "@dependency/parseKeyValuePairSeparatedBySymbol": "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol"
-
-    },
-    "main": ""
-
+    }
 }
