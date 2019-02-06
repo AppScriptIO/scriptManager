@@ -2,10 +2,8 @@ const path = require('path')
 
 const ownConfiguration = { // own project's configuration
     directory: {
-        application: {
-            rootPath: path.normalize(`${__dirname}/..`)
-        }
-    },
+        root: path.resolve(`${__dirname}/..`),
+    },    
     script: [
         {
             type: 'directory',
