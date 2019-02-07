@@ -673,23 +673,23 @@
 
 "@dependency/JSModuleTypeCheck@https://github.com/AppScriptIO/JSModuleTypeCheck":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/JSModuleTypeCheck#5304dc21a98b7dca4e6c0289ad30a8be5c4b2406"
+  resolved "https://github.com/AppScriptIO/JSModuleTypeCheck#227d0dd365f7634c8e2d0343eed5dbaf229c8081"
 
 "@dependency/addModuleResolutionPath@https://github.com/AppScriptIO/addModuleResolutionPath":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/addModuleResolutionPath#095d543e1fa3bc085efea0d5f213793a1121645c"
+  resolved "https://github.com/AppScriptIO/addModuleResolutionPath#f64d78b3bfced3a177aec833f963289249ae0782"
 
 "@dependency/configuration@https://github.com/AppScriptIO/configurationManagement", "@dependency/configurationManagement@https://github.com/AppScriptIO/configurationManagement":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/configurationManagement#fc9a9e2d001f3b3ea9ddb4a800e54c336a279bc7"
+  resolved "https://github.com/AppScriptIO/configurationManagement#c91250976f3d9b2a4df717112719312778571978"
 
 "@dependency/installNodeJSModule@https://github.com/AppScriptIO/installNodeJSModule":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/installNodeJSModule#4079184b9a2cec2cb3403d219a503e19d21456e2"
+  resolved "https://github.com/AppScriptIO/installNodeJSModule#aec8fc2a5b9c29aa93b7c0cdd254b24e82ff7da7"
 
 "@dependency/javascriptTranspilation@https://github.com/AppScriptIO/javascriptTranspilation":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/javascriptTranspilation#c3dcc3525e0fc51a6d144ff9f010a10c48a59029"
+  resolved "https://github.com/AppScriptIO/javascriptTranspilation#b24a184f5a4a74235d6243ba9c6b2141c428b80d"
   dependencies:
     "@babel/core" "*"
     "@babel/plugin-proposal-class-properties" "*"
@@ -714,31 +714,21 @@
 
 "@dependency/listDirectoryContent@https://github.com/AppScriptIO/listDirectoryContent":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/listDirectoryContent#750f191e4f2388410cbd2e484afdb06921e87f13"
+  resolved "https://github.com/AppScriptIO/listDirectoryContent#7e0a5dcd358020aab739c344bf37e3afc7470fe3"
 
 "@dependency/moduleScopePattern@https://github.com/AppScriptIO/moduleScopePattern":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/moduleScopePattern#e47430ae5cee129f0ecef68def2b8150a6b5e376"
+  resolved "https://github.com/AppScriptIO/moduleScopePattern#16b668fda4cd4c353cbebbca45d5210fbcaf51ac"
   dependencies:
     "@dependency/recursiveCreateDirectory" "https://github.com/AppScriptIO/recursiveCreateDirectory"
 
 "@dependency/parseKeyValuePairSeparatedBySymbol@https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol":
   version "0.1.0"
-  resolved "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol#52e6249af649c0d6e9fdd43c401682a51fbd1394"
+  resolved "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol#ec7d5275c73a0c3c10e9eee5078c09d226ed97df"
 
 "@dependency/recursiveCreateDirectory@https://github.com/AppScriptIO/recursiveCreateDirectory":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/recursiveCreateDirectory#0e7152863e26a73fe3ceb257c121872bd08055fb"
-
-"@dependency/scriptExecution@https://github.com/AppScriptIO/scriptExecution", "@script/scriptExecution@https://github.com/AppScriptIO/scriptExecution":
-  version "1.0.0"
-  resolved "https://github.com/AppScriptIO/scriptExecution#59f24b0abee4ef028a5b97e15e8c3363f9d1b8da"
-  dependencies:
-    "@dependency/JSModuleTypeCheck" "https://github.com/AppScriptIO/JSModuleTypeCheck"
-    "@dependency/configuration" "https://github.com/AppScriptIO/configurationManagement"
-    "@dependency/configurationManagement" "https://github.com/AppScriptIO/configurationManagement"
-    "@dependency/installNodeJSModule" "https://github.com/AppScriptIO/installNodeJSModule"
-    "@dependency/listDirectoryContent" "https://github.com/AppScriptIO/listDirectoryContent"
+  resolved "https://github.com/AppScriptIO/recursiveCreateDirectory#675b1b4c0e91d14d8ffe344dcd1c1825e93d4156"
 
 JSONStream@1.3.2:
   version "1.3.2"
@@ -2393,9 +2383,9 @@ core-js@^1.2.6:
   integrity sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
 
 core-js@^2.0.0, core-js@^2.4.0, core-js@^2.5.0, core-js@^2.5.7:
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.3.tgz#4b70938bdffdaf64931e66e2db158f0892289c49"
-  integrity sha512-l00tmFFZOBHtYhN4Cz7k32VM7vTn3rE2ANjQDxdEN6zmXZ/xq1jQuutnmHvMG1ZJ7xd72+TA5YpUK8wz3rWsfQ==
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.4.tgz#b8897c062c4d769dd30a0ac5c73976c47f92ea0d"
+  integrity sha512-05qQ5hXShcqGkPZpXEFLIpxayZscVD2kuMBZewxiIPPEagukO4mqgPA9CWhUvFBJfy3ODdK2p9xyHh7FTU9/7A==
 
 core-util-is@~1.0.0:
   version "1.0.2"
