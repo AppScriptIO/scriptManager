@@ -5,7 +5,8 @@
     "bin": {
         "scriptManager": "./source/entrypoint/cli/transpilation.entrypoint.js",
         "run": "./source/entrypoint/cli/transpilation.entrypoint.js",
-        "scriptManagerInContainer": "./source/entrypoint/cliRunInContainer/transpilation.entrypoint.js"
+        "scriptManagerInContainer": "./source/entrypoint/cliRunInContainer/transpilation.entrypoint.js", 
+        "updateGithubVersions": "yarn run scriptManager versionGithub \".checkVersion({ shouldUpdatePackage: true })\""
     },
     "scripts": {
         "setup": "yarn install --production=false",
