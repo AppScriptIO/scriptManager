@@ -7,3 +7,5 @@
     Allowing scripts to simply be installed in the target project and automatically used by `script manager`, without the need to configure each script settings in the target project`s configuration or even adding them as keys in the target project configuration file. Simply install the script and use it.
 
 - 
+
+- Describe better the error of default behavior where the exported script must be a function. The error currently thrown for trying to execute a non function exported object: `TypeError: (0 , _script.source) is not a function`
