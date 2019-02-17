@@ -1,4 +1,7 @@
 const path = require('path')
+const resolvedModule = {
+    get deploymentScript() { return path.dirname( require.resolve(`@dependency/deploymentScript/package.json`) )  },
+}
 
 const ownConfiguration = { // own project's configuration
     directory: {
@@ -7,9 +10,13 @@ const ownConfiguration = { // own project's configuration
     script: [
         {
             type: 'directory',
-            path: './script/'
+            path: `${resolvedModule.deploymentScript}/script`,
         }, 
         {
+            type: 'directory',
+            path: './script/'
+        }, 
+        { // example of specifying specific local project script
             type: 'script',
             key: 'sleep',
             path: './script/sleep.js'
