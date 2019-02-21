@@ -16,11 +16,11 @@ const ownConfiguration = { // own project's configuration
             type: 'directory',
             path: './script/'
         }, 
-        { // example of specifying specific local project script
-            type: 'script',
-            key: 'sleep',
-            path: './script/sleep.js'
-        },
+        // { // example of specifying specific local project script
+        //     type: 'script',
+        //     key: 'sleep',
+        //     path: './script/sleep.js'
+        // },
     ],
 }
 
