@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "main": "./source/entrypoint/module/transpilation.entrypoint.js",
     "bin": {
-        "scriptManager": "./source/entrypoint/cli/transpilation.entrypoint.js",
+        "scriptManager": "./source/entrypoint/cli/invokeCli.js",
         "run": "./source/entrypoint/cli/transpilation.entrypoint.js",
         "scriptManagerInContainer": "./source/entrypoint/cliRunInContainer/transpilation.entrypoint.js"
     },
