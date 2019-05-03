@@ -1,6 +1,10 @@
 /* Entrypoint chain */
 // • Transpilation (babelJSCompiler)
-require('@dependency/javascriptTranspilation')({ babelConfigurationFile: 'serverRuntime.BabelConfig.js' })
+const { Compiler } = require('@dependency/javascriptTranspilation')
+
+let compiler = new Compiler()
+compiler.requireHook()
+compiler.outputTranspilation()
 
 // • Run
-module.exports = require('./')
+module.exports = require('../../scriptManager/clientInterface/temporary.js')
