@@ -1,11 +1,10 @@
 {
     "name": "@dependency/scriptManager",
-    "version": "1.0.0",
-    "main": "./source/entrypoint/module/transpilation.entrypoint.js",
+    "version": "1.0.3",
+    "main": "./entrypoint/programmaticAPI",
     "bin": {
-        "scriptManager": "./source/entrypoint/cli/invokeCli.js",
-        "run": "./source/entrypoint/cli/transpilation.entrypoint.js",
-        "scriptManagerInContainer": "./source/entrypoint/cliRunInContainer/transpilation.entrypoint.js"
+        "scriptManager": "./entrypoint/cli",
+        "scriptManagerInContainer": "./entrypoint/cliRunInContainer"
     },
     "scripts": {
         "setup": "yarn install --production=false",
@@ -39,8 +38,8 @@
     },
     "devDependencies": {
         "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript",
-        "@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis",
-        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation",
+        "@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis#semver:^1.x.x",
+        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x",
         "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager",
         "typescript": "^3.3.3333"
     }

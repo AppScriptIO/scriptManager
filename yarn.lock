@@ -865,7 +865,11 @@
 
 "@dependency/configuration@https://github.com/AppScriptIO/configurationManagement", "@dependency/configurationManagement@https://github.com/AppScriptIO/configurationManagement":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/configurationManagement#41c63add0252c3d86174135b9f9b640a28177f4d"
+  resolved "https://github.com/AppScriptIO/configurationManagement#21de0a4abf06bd6cb310361184400c91ceb6c87e"
+
+"@dependency/configurationManagement@https://github.com/AppScriptIO/configurationManagement#semver:^1.x.x":
+  version "1.0.0"
+  resolved "https://github.com/AppScriptIO/configurationManagement#b299f5eb174a73f78e4f77cb69a9055c55855c0a"
 
 "@dependency/deploymentScript@https://github.com/AppScriptIO/deploymentScript":
   version "1.0.0"
@@ -906,10 +910,9 @@
     should "*"
     sinon "*"
 
-"@dependency/javascriptTranspilation@https://github.com/AppScriptIO/javascriptTranspilation", "@dependency/javascriptTranspilation@https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x":
-  version "1.0.0"
-  uid "8591390483a6ab2d8731684a6ff9dfbb9ff111ec"
-  resolved "https://github.com/AppScriptIO/javascriptTranspilation#8591390483a6ab2d8731684a6ff9dfbb9ff111ec"
+"@dependency/javascriptTranspilation@https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x":
+  version "1.1.5"
+  resolved "https://github.com/AppScriptIO/javascriptTranspilation#25fe9cd1fe2154866abf4097e4e6dc59e856e87e"
   dependencies:
     "@babel/babel-plugin-functionSentProxyImplementation" "https://github.com/AppScriptIO/babel-plugin-functionSentProxyImplementation"
     "@babel/core" "*"
@@ -941,7 +944,7 @@
     "@babel/register" "*"
     "@babel/runtime" "*"
     "@dependency/addModuleResolutionPath" "https://github.com/AppScriptIO/addModuleResolutionPath"
-    "@dependency/configurationManagement" "https://github.com/AppScriptIO/configurationManagement"
+    "@dependency/configurationManagement" "https://github.com/AppScriptIO/configurationManagement#semver:^1.x.x"
     babel-minify "*"
     babel-plugin-dynamic-import-node "*"
     babel-plugin-dynamic-import-node-babel-7 "*"
@@ -991,7 +994,7 @@
 
 "@dependency/scriptManager@https://github.com/AppScriptIO/scriptManager":
   version "1.0.0"
-  resolved "https://github.com/AppScriptIO/scriptManager#4f86df3dfa855a04fe4939062eebfc849838aae8"
+  resolved "https://github.com/AppScriptIO/scriptManager#c96d5d8261049d7563095070e6ca9ff7becbe8a1"
   dependencies:
     "@dependency/JSModuleTypeCheck" "https://github.com/AppScriptIO/JSModuleTypeCheck"
     "@dependency/addModuleResolutionPath" "https://github.com/AppScriptIO/addModuleResolutionPath"
@@ -2724,9 +2727,9 @@ camelcase@^5.0.0:
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
 caniuse-lite@^1.0.30000963:
-  version "1.0.30000963"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000963.tgz#5be481d5292f22aff5ee0db4a6c049b65b5798b1"
-  integrity sha512-n4HUiullc7Lw0LyzpeLa2ffP8KxFBGdxqD/8G3bSL6oB758hZ2UE2CVK+tQN958tJIi0/tfpjAc67aAtoHgnrQ==
+  version "1.0.30000966"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000966.tgz#f3c6fefacfbfbfb981df6dfa68f2aae7bff41b64"
+  integrity sha512-qqLQ/uYrpZmFhPY96VuBkMEo8NhVFBZ9y/Bh+KnvGzGJ5I8hvpIaWlF2pw5gqe4PLAL+ZjsPgMOvoXSpX21Keg==
 
 capture-stack-trace@^1.0.0:
   version "1.0.1"
@@ -3357,9 +3360,9 @@ ee-first@1.1.1:
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
 electron-to-chromium@^1.3.127:
-  version "1.3.127"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.127.tgz#9b34d3d63ee0f3747967205b953b25fe7feb0e10"
-  integrity sha512-1o25iFRf/dbgauTWalEzmD1EmRN3a2CzP/K7UVpYLEBduk96LF0FyUdCcf4Ry2mAWJ1VxyblFjC93q6qlLwA2A==
+  version "1.3.131"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.131.tgz#205a0b7a276b3f56bc056f19178909243054252a"
+  integrity sha512-NSO4jLeyGLWrT4mzzfYX8vt1MYCoMI5LxSYAjt0H9+LF/14JyiKJSyyjA6AJTxflZlEM5v3QU33F0ohbPMCAPg==
 
 emoji-regex@^7.0.1:
   version "7.0.3"
@@ -5798,9 +5801,9 @@ pathval@^1.1.0:
   integrity sha1-uULm1L3mUwBe9rcTYd74cn0GReA=
 
 picomatch@^2.0.4:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.0.5.tgz#067456ff321d6447ca3dc32273d7bbf19ab2face"
-  integrity sha512-Zisqgaq/4P05ZclrU/g5XrzFqVo7YiJx+EP4haeVI9S7kvtZmZgmQMZfcvjEus9JcMhqZfQZObimT5ZydvKJGA==
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.0.6.tgz#f39cfedd26213982733ae6b819d3da0e736598d5"
+  integrity sha512-Btng9qVvFsW6FkXYQQK5nEI5i8xdXFDmlKxC7Q8S2Bu5HGWnbQf7ts2kOoxJIrZn5hmw61RZIayAg2zBuJDtyQ==
 
 pify@^2.0.0:
   version "2.3.0"
@@ -7603,7 +7606,7 @@ yallist@^3.0.0, yallist@^3.0.2:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-3.0.3.tgz#b4b049e314be545e3ce802236d6cd22cd91c3de9"
   integrity sha512-S+Zk8DEWE6oKpV+vI3qWkaK+jSbIK86pCwe2IF/xwIpQ8jEuxpw9NyaGjmp9+BoJv5FV2piqCDcoCtStppiq2A==
 
-yargs-parser@13.0.0, yargs-parser@^13.0.0:
+yargs-parser@13.0.0:
   version "13.0.0"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-13.0.0.tgz#3fc44f3e76a8bdb1cc3602e860108602e5ccde8b"
   integrity sha512-w2LXjoL8oRdRQN+hOyppuXs+V/fVAYtpcrRxZuF7Kt/Oc+Jr2uAcVntaUTNT6w5ihoWfFDpNY8CPx1QskxZ/pw==
@@ -7622,6 +7625,14 @@ yargs-parser@^11.1.1:
   version "11.1.1"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-11.1.1.tgz#879a0865973bca9f6bab5cbdf3b1c67ec7d3bcf4"
   integrity sha512-C6kB/WJDiaxONLJQnF8ccx9SEeoTTLek8RVbaOIsrAUS8VrBEXfmeSnCZxygc+XC2sNMBIwOOnfcxiynjHsVSQ==
+  dependencies:
+    camelcase "^5.0.0"
+    decamelize "^1.2.0"
+
+yargs-parser@^13.0.0:
+  version "13.1.0"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-13.1.0.tgz#7016b6dd03e28e1418a510e258be4bff5a31138f"
+  integrity sha512-Yq+32PrijHRri0vVKQEm+ys8mbqWjLiwQkMFNXEENutzLPP0bE4Lcd4iA3OQY5HF+GD3xXxf0MEHb8E4/SA3AA==
   dependencies:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
