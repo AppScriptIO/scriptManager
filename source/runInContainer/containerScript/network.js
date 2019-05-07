@@ -1,9 +1,10 @@
-// NETWORK
-let networkName = 'scriptManager'
+"use strict";
+let networkName = 'scriptManager';
 {
-    let createNetwork = spawnSync('docker', [`network create ${networkName}`], { 
-        detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'ignore'],
-        env: process.env // pass environment variables like process.env.PWD to spawn process
-    })
-    if(createNetwork.status == 1) console.log('Docker network already exist.')
+  let createNetwork = spawnSync('docker', [`network create ${networkName}`], {
+    detached: false, shell: true, stdio: ['inherit', 'inherit', 'ignore'],
+    env: process.env });
+
+  if (createNetwork.status == 1) console.log('Docker network already exist.');
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9ydW5JbkNvbnRhaW5lci9jb250YWluZXJTY3JpcHQvbmV0d29yay5qcyJdLCJuYW1lcyI6WyJuZXR3b3JrTmFtZSIsImNyZWF0ZU5ldHdvcmsiLCJzcGF3blN5bmMiLCJkZXRhY2hlZCIsInNoZWxsIiwic3RkaW8iLCJlbnYiLCJwcm9jZXNzIiwic3RhdHVzIiwiY29uc29sZSIsImxvZyJdLCJtYXBwaW5ncyI6IjtBQUNBLElBQUlBLFdBQVcsR0FBRyxlQUFsQjtBQUNBO0FBQ0ksTUFBSUMsYUFBYSxHQUFHQyxTQUFTLENBQUMsUUFBRCxFQUFXLENBQUUsa0JBQWlCRixXQUFZLEVBQS9CLENBQVgsRUFBOEM7QUFDdkVHLElBQUFBLFFBQVEsRUFBRSxLQUQ2RCxFQUN0REMsS0FBSyxFQUFFLElBRCtDLEVBQ3pDQyxLQUFLLEVBQUUsQ0FBRSxTQUFGLEVBQWEsU0FBYixFQUF3QixRQUF4QixDQURrQztBQUV2RUMsSUFBQUEsR0FBRyxFQUFFQyxPQUFPLENBQUNELEdBRjBELEVBQTlDLENBQTdCOztBQUlBLE1BQUdMLGFBQWEsQ0FBQ08sTUFBZCxJQUF3QixDQUEzQixFQUE4QkMsT0FBTyxDQUFDQyxHQUFSLENBQVksK0JBQVo7QUFDakMiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBORVRXT1JLXHJcbmxldCBuZXR3b3JrTmFtZSA9ICdzY3JpcHRNYW5hZ2VyJ1xyXG57XHJcbiAgICBsZXQgY3JlYXRlTmV0d29yayA9IHNwYXduU3luYygnZG9ja2VyJywgW2BuZXR3b3JrIGNyZWF0ZSAke25ldHdvcmtOYW1lfWBdLCB7IFxyXG4gICAgICAgIGRldGFjaGVkOiBmYWxzZSwgc2hlbGw6IHRydWUsIHN0ZGlvOiBbICdpbmhlcml0JywgJ2luaGVyaXQnLCAnaWdub3JlJ10sXHJcbiAgICAgICAgZW52OiBwcm9jZXNzLmVudiAvLyBwYXNzIGVudmlyb25tZW50IHZhcmlhYmxlcyBsaWtlIHByb2Nlc3MuZW52LlBXRCB0byBzcGF3biBwcm9jZXNzXHJcbiAgICB9KVxyXG4gICAgaWYoY3JlYXRlTmV0d29yay5zdGF0dXMgPT0gMSkgY29uc29sZS5sb2coJ0RvY2tlciBuZXR3b3JrIGFscmVhZHkgZXhpc3QuJylcclxufVxyXG4iXX0=

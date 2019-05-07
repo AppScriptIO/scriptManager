@@ -1,10 +1,10 @@
-module.exports = Object.assign(
-  {
-    // remap exports to subfolders.
-    get runInContainer() {
-      // getter for isolation of this module, where it is required only if imported. This prevents the entrypoint checks in this module to run each time this file executes. i.e. run on-demand only.
-      return require('./runInContainer')() // returns a function
-    },
-  },
-  require('./scriptManager'),
-)
+"use strict";module.exports = Object.assign(
+{
+
+  get runInContainer() {
+
+    return require('./runInContainer')();
+  } },
+
+require('./scriptManager'));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NvdXJjZS9lbnRyeXBvaW50LmpzIl0sIm5hbWVzIjpbIm1vZHVsZSIsImV4cG9ydHMiLCJPYmplY3QiLCJhc3NpZ24iLCJydW5JbkNvbnRhaW5lciIsInJlcXVpcmUiXSwibWFwcGluZ3MiOiJhQUFBQSxNQUFNLENBQUNDLE9BQVAsR0FBaUJDLE1BQU0sQ0FBQ0MsTUFBUDtBQUNmOztBQUVFLE1BQUlDLGNBQUosR0FBcUI7O0FBRW5CLFdBQU9DLE9BQU8sQ0FBQyxrQkFBRCxDQUFQLEVBQVA7QUFDRCxHQUxILEVBRGU7O0FBUWZBLE9BQU8sQ0FBQyxpQkFBRCxDQVJRLENBQWpCIiwic291cmNlc0NvbnRlbnQiOlsibW9kdWxlLmV4cG9ydHMgPSBPYmplY3QuYXNzaWduKFxyXG4gIHtcclxuICAgIC8vIHJlbWFwIGV4cG9ydHMgdG8gc3ViZm9sZGVycy5cclxuICAgIGdldCBydW5JbkNvbnRhaW5lcigpIHtcclxuICAgICAgLy8gZ2V0dGVyIGZvciBpc29sYXRpb24gb2YgdGhpcyBtb2R1bGUsIHdoZXJlIGl0IGlzIHJlcXVpcmVkIG9ubHkgaWYgaW1wb3J0ZWQuIFRoaXMgcHJldmVudHMgdGhlIGVudHJ5cG9pbnQgY2hlY2tzIGluIHRoaXMgbW9kdWxlIHRvIHJ1biBlYWNoIHRpbWUgdGhpcyBmaWxlIGV4ZWN1dGVzLiBpLmUuIHJ1biBvbi1kZW1hbmQgb25seS5cclxuICAgICAgcmV0dXJuIHJlcXVpcmUoJy4vcnVuSW5Db250YWluZXInKSgpIC8vIHJldHVybnMgYSBmdW5jdGlvblxyXG4gICAgfSxcclxuICB9LFxyXG4gIHJlcXVpcmUoJy4vc2NyaXB0TWFuYWdlcicpLFxyXG4pXHJcbiJdfQ==

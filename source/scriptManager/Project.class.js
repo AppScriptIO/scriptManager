@@ -1,12 +1,12 @@
-import { Configuration } from '@dependency/configurationManagement'
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.Project = void 0;var _configurationManagement = require("@dependency/configurationManagement");
 
-export class Project {
+class Project {
 
-    constructor({
-        configurationPath = {}
-    }) {
-        let configurationObject = require(configurationPath) // load configuration of the project
-        this.configuration = new Configuration({ configuration: configurationObject }) // create an instance that follows the `Configuration` specification.
-        return this
-    }
-}
+  constructor({
+    configurationPath = {} })
+  {
+    let configurationObject = require(configurationPath);
+    this.configuration = new _configurationManagement.Configuration({ configuration: configurationObject });
+    return this;
+  }}exports.Project = Project;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9zY3JpcHRNYW5hZ2VyL1Byb2plY3QuY2xhc3MuanMiXSwibmFtZXMiOlsiUHJvamVjdCIsImNvbnN0cnVjdG9yIiwiY29uZmlndXJhdGlvblBhdGgiLCJjb25maWd1cmF0aW9uT2JqZWN0IiwicmVxdWlyZSIsImNvbmZpZ3VyYXRpb24iLCJDb25maWd1cmF0aW9uIl0sIm1hcHBpbmdzIjoib0dBQUE7O0FBRU8sTUFBTUEsT0FBTixDQUFjOztBQUVqQkMsRUFBQUEsV0FBVyxDQUFDO0FBQ1JDLElBQUFBLGlCQUFpQixHQUFHLEVBRFosRUFBRDtBQUVSO0FBQ0MsUUFBSUMsbUJBQW1CLEdBQUdDLE9BQU8sQ0FBQ0YsaUJBQUQsQ0FBakM7QUFDQSxTQUFLRyxhQUFMLEdBQXFCLElBQUlDLHNDQUFKLENBQWtCLEVBQUVELGFBQWEsRUFBRUYsbUJBQWpCLEVBQWxCLENBQXJCO0FBQ0EsV0FBTyxJQUFQO0FBQ0gsR0FSZ0IsQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IENvbmZpZ3VyYXRpb24gfSBmcm9tICdAZGVwZW5kZW5jeS9jb25maWd1cmF0aW9uTWFuYWdlbWVudCdcclxuXHJcbmV4cG9ydCBjbGFzcyBQcm9qZWN0IHtcclxuXHJcbiAgICBjb25zdHJ1Y3Rvcih7XHJcbiAgICAgICAgY29uZmlndXJhdGlvblBhdGggPSB7fVxyXG4gICAgfSkge1xyXG4gICAgICAgIGxldCBjb25maWd1cmF0aW9uT2JqZWN0ID0gcmVxdWlyZShjb25maWd1cmF0aW9uUGF0aCkgLy8gbG9hZCBjb25maWd1cmF0aW9uIG9mIHRoZSBwcm9qZWN0XHJcbiAgICAgICAgdGhpcy5jb25maWd1cmF0aW9uID0gbmV3IENvbmZpZ3VyYXRpb24oeyBjb25maWd1cmF0aW9uOiBjb25maWd1cmF0aW9uT2JqZWN0IH0pIC8vIGNyZWF0ZSBhbiBpbnN0YW5jZSB0aGF0IGZvbGxvd3MgdGhlIGBDb25maWd1cmF0aW9uYCBzcGVjaWZpY2F0aW9uLlxyXG4gICAgICAgIHJldHVybiB0aGlzXHJcbiAgICB9XHJcbn0iXX0=
