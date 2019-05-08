@@ -20,7 +20,7 @@ const ownConfiguration = {
     // }
   },
   entrypoint: {
-    programmaticAPI: './entrypoint.js',
+    programmaticAPI: './script.js',
     cli: './scriptManager/clientInterface/commandLine.js',
   },
   script: [

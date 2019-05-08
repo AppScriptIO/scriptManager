@@ -15,8 +15,4 @@ if (filesystem.existsSync(projectConfig.directory.distribution)) {
   compiler.requireHook()
   compiler.outputTranspilation()
   module.exports = require(path.join(projectConfig.directory.source, projectConfig.entrypoint.cli))
-  // way to output runtime transpilation in circular dependency.
-  // process.nextTick(() => {
-  //   console.log(compiler.loadedFiles) // write any newer files transpiled in successive usage of this module.
-  // })
 }
