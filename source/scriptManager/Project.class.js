@@ -1,9 +1,9 @@
-import { Configuration } from '@dependency/configurationManagement'
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.Project = void 0;var _configurationManagement = require("@dependency/configurationManagement");
 
-export class Project {
+class Project {
   constructor({ configurationPath = {} }) {
-    let configurationObject = require(configurationPath) // load configuration of the project
-    this.configuration = new Configuration({ configuration: configurationObject }) // create an instance that follows the `Configuration` specification.
-    return this
-  }
-}
+    let configurationObject = require(configurationPath);
+    this.configuration = new _configurationManagement.Configuration({ configuration: configurationObject });
+    return this;
+  }}exports.Project = Project;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9zY3JpcHRNYW5hZ2VyL1Byb2plY3QuY2xhc3MuanMiXSwibmFtZXMiOlsiUHJvamVjdCIsImNvbnN0cnVjdG9yIiwiY29uZmlndXJhdGlvblBhdGgiLCJjb25maWd1cmF0aW9uT2JqZWN0IiwicmVxdWlyZSIsImNvbmZpZ3VyYXRpb24iLCJDb25maWd1cmF0aW9uIl0sIm1hcHBpbmdzIjoib0dBQUE7O0FBRU8sTUFBTUEsT0FBTixDQUFjO0FBQ25CQyxFQUFBQSxXQUFXLENBQUMsRUFBRUMsaUJBQWlCLEdBQUcsRUFBdEIsRUFBRCxFQUE2QjtBQUN0QyxRQUFJQyxtQkFBbUIsR0FBR0MsT0FBTyxDQUFDRixpQkFBRCxDQUFqQztBQUNBLFNBQUtHLGFBQUwsR0FBcUIsSUFBSUMsc0NBQUosQ0FBa0IsRUFBRUQsYUFBYSxFQUFFRixtQkFBakIsRUFBbEIsQ0FBckI7QUFDQSxXQUFPLElBQVA7QUFDRCxHQUxrQixDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQ29uZmlndXJhdGlvbiB9IGZyb20gJ0BkZXBlbmRlbmN5L2NvbmZpZ3VyYXRpb25NYW5hZ2VtZW50J1xuXG5leHBvcnQgY2xhc3MgUHJvamVjdCB7XG4gIGNvbnN0cnVjdG9yKHsgY29uZmlndXJhdGlvblBhdGggPSB7fSB9KSB7XG4gICAgbGV0IGNvbmZpZ3VyYXRpb25PYmplY3QgPSByZXF1aXJlKGNvbmZpZ3VyYXRpb25QYXRoKSAvLyBsb2FkIGNvbmZpZ3VyYXRpb24gb2YgdGhlIHByb2plY3RcbiAgICB0aGlzLmNvbmZpZ3VyYXRpb24gPSBuZXcgQ29uZmlndXJhdGlvbih7IGNvbmZpZ3VyYXRpb246IGNvbmZpZ3VyYXRpb25PYmplY3QgfSkgLy8gY3JlYXRlIGFuIGluc3RhbmNlIHRoYXQgZm9sbG93cyB0aGUgYENvbmZpZ3VyYXRpb25gIHNwZWNpZmljYXRpb24uXG4gICAgcmV0dXJuIHRoaXNcbiAgfVxufVxuIl19
