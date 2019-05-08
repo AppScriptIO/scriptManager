@@ -10,6 +10,6 @@ if (filesystem.existsSync(projectConfig.directory.distribution)) {
   const { Compiler } = require('@dependency/javascriptTranspilation')
   let compiler = new Compiler()
   compiler.requireHook()
-  compiler.outputTranspilation()
+  // compiler.outputTranspilation()
   module.exports = require(path.join(projectConfig.directory.source, projectConfig.entrypoint.programmaticAPI))
 }
