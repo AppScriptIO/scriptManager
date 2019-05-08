@@ -10,13 +10,13 @@ import path from 'path'
 import assert from 'assert'
 import filesystem from 'fs'
 import vm from 'vm'
-import ownConfiguration from '../../../configuration'
+import ownConfiguration from '../../functionality.config.js'
 import { parseKeyValuePairSeparatedBySymbolFromArray, combineKeyValueObjectIntoString } from '@dependency/parseKeyValuePairSeparatedBySymbol'
 import { configurationFileLookup } from '@dependency/configurationManagement'
-import { scriptManager } from '../'
-import { loadStdin } from '../utility/loadStdin.js'
-import { isJSCodeToEvaluate } from '../utility/isJSCodeToEvaluate.js'
-import { splitArrayToTwoByDelimiter, divideArrayByFilter } from '../utility/splitArray.js'
+import { scriptManager } from '../script.js'
+import { loadStdin } from '../../utility/loadStdin.js'
+import { isJSCodeToEvaluate } from '../../utility/isJSCodeToEvaluate.js'
+import { splitArrayToTwoByDelimiter, divideArrayByFilter } from '../../utility/splitArray.js'
 
 cliInterface().catch(error => console.error(error))
 

@@ -1,10 +1,10 @@
 {
     "name": "@dependency/scriptManager",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "main": "./entrypoint/programmaticAPI",
     "bin": {
-        "scriptManager": "./entrypoint/cli",
-        "scriptManagerInContainer": "./entrypoint/cliRunInContainer"
+        "scriptManager": "./entrypoint/cli/index.js",
+        "scriptManagerInContainer": "./entrypoint/cliRunInContainer/index.js"
     },
     "scripts": {
         "setup": "yarn install --production=false",
@@ -14,11 +14,6 @@
         "build": "yarn run scriptManager buildSourceCode \".build({})\" ",
         "updateGithubVersions": "yarn run scriptManager versionGithub \".checkVersion({ shouldUpdatePackage: true })\""
     },
-    "workspaces": [
-        "source",
-        "./script/*"
-    ],
-    "private": true,
     "dependencies": {
         "@dependency/JSModuleTypeCheck": "https://github.com/AppScriptIO/JSModuleTypeCheck#semver:^1.x.x",
         "@dependency/addModuleResolutionPath": "https://github.com/AppScriptIO/addModuleResolutionPath#semver:^1.x.x",
