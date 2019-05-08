@@ -1,12 +1,12 @@
-import { Configuration } from '@dependency/configurationManagement'
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.Project = void 0;var _configurationManagement = require("@dependency/configurationManagement");
 
-export class Project {
+class Project {
 
-    constructor({
-        configurationPath = {}
-    }) {
-        let configurationObject = require(configurationPath) // load configuration of the project
-        this.configuration = new Configuration({ configuration: configurationObject }) // create an instance that follows the `Configuration` specification.
-        return this
-    }
-}
+  constructor({
+    configurationPath = {} })
+  {
+    let configurationObject = require(configurationPath);
+    this.configuration = new _configurationManagement.Configuration({ configuration: configurationObject });
+    return this;
+  }}exports.Project = Project;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9zY3JpcHRNYW5hZ2VyL1Byb2plY3QuY2xhc3MuanMiXSwibmFtZXMiOlsiUHJvamVjdCIsImNvbnN0cnVjdG9yIiwiY29uZmlndXJhdGlvblBhdGgiLCJjb25maWd1cmF0aW9uT2JqZWN0IiwicmVxdWlyZSIsImNvbmZpZ3VyYXRpb24iLCJDb25maWd1cmF0aW9uIl0sIm1hcHBpbmdzIjoib0dBQUE7O0FBRU8sTUFBTUEsT0FBTixDQUFjOztBQUVqQkMsRUFBQUEsV0FBVyxDQUFDO0FBQ1JDLElBQUFBLGlCQUFpQixHQUFHLEVBRFosRUFBRDtBQUVSO0FBQ0MsUUFBSUMsbUJBQW1CLEdBQUdDLE9BQU8sQ0FBQ0YsaUJBQUQsQ0FBakM7QUFDQSxTQUFLRyxhQUFMLEdBQXFCLElBQUlDLHNDQUFKLENBQWtCLEVBQUVELGFBQWEsRUFBRUYsbUJBQWpCLEVBQWxCLENBQXJCO0FBQ0EsV0FBTyxJQUFQO0FBQ0gsR0FSZ0IsQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IENvbmZpZ3VyYXRpb24gfSBmcm9tICdAZGVwZW5kZW5jeS9jb25maWd1cmF0aW9uTWFuYWdlbWVudCdcblxuZXhwb3J0IGNsYXNzIFByb2plY3Qge1xuXG4gICAgY29uc3RydWN0b3Ioe1xuICAgICAgICBjb25maWd1cmF0aW9uUGF0aCA9IHt9XG4gICAgfSkge1xuICAgICAgICBsZXQgY29uZmlndXJhdGlvbk9iamVjdCA9IHJlcXVpcmUoY29uZmlndXJhdGlvblBhdGgpIC8vIGxvYWQgY29uZmlndXJhdGlvbiBvZiB0aGUgcHJvamVjdFxuICAgICAgICB0aGlzLmNvbmZpZ3VyYXRpb24gPSBuZXcgQ29uZmlndXJhdGlvbih7IGNvbmZpZ3VyYXRpb246IGNvbmZpZ3VyYXRpb25PYmplY3QgfSkgLy8gY3JlYXRlIGFuIGluc3RhbmNlIHRoYXQgZm9sbG93cyB0aGUgYENvbmZpZ3VyYXRpb25gIHNwZWNpZmljYXRpb24uXG4gICAgICAgIHJldHVybiB0aGlzXG4gICAgfVxufSJdfQ==

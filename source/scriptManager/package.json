@@ -1,9 +1,0 @@
-{
-  "name": "@dependency/registryPackage",
-  "version": "1.0.0",
-  "main": "script.js",
-  "flat": false,
-  "license": "MIT",
-  "dependencies": {
-  }
-}

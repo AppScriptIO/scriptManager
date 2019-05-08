@@ -1,25 +1,26 @@
-// divide an array into two separate arrays by an item value that equals the provided delimiter
-// ['qqq', '--', 'eee', 'ppp'] => ['qqq'], [eee', 'ppp']
-export function splitArrayToTwoByDelimiter({ array, delimiter }) {
-    let beforeDelimiter = [], afterDelimiter = [];
-    let delimiterIndex = array.indexOf(delimiter)
-    if(delimiterIndex >= 0 ){
-        beforeDelimiter = array.slice(0, delimiterIndex)
-        afterDelimiter = array.slice(delimiterIndex + 1)
-    } else 
-        beforeDelimiter = array
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.splitArrayToTwoByDelimiter = splitArrayToTwoByDelimiter;exports.divideArrayByFilter = divideArrayByFilter;
 
-    return [beforeDelimiter, afterDelimiter] // return empty array for `after` delimiter parameter.
+function splitArrayToTwoByDelimiter({ array, delimiter }) {
+  let beforeDelimiter = [],afterDelimiter = [];
+  let delimiterIndex = array.indexOf(delimiter);
+  if (delimiterIndex >= 0) {
+    beforeDelimiter = array.slice(0, delimiterIndex);
+    afterDelimiter = array.slice(delimiterIndex + 1);
+  } else
+  beforeDelimiter = array;
+
+  return [beforeDelimiter, afterDelimiter];
 }
 
-/** 
- * Split array to two according to conditions
- * @return [<array of matching>, <array of not matching>]
- * Example: 
- *   ['Xz', 'qwr', 'tXt'] where condition is presense of 'X' => ['Xz', 'tXt'], ['qwr']
- */
-export function divideArrayByFilter({ array, filterFunc }) {
-    return array.reduce(([pass, fail], item) => {
-        return filterFunc(item) ? [[...pass, item], fail] : [pass, [...fail, item]];
-      }, [[], []]);    
+
+
+
+
+
+
+function divideArrayByFilter({ array, filterFunc }) {
+  return array.reduce(([pass, fail], item) => {
+    return filterFunc(item) ? [[...pass, item], fail] : [pass, [...fail, item]];
+  }, [[], []]);
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9zY3JpcHRNYW5hZ2VyL3V0aWxpdHkvc3BsaXRBcnJheS5qcyJdLCJuYW1lcyI6WyJzcGxpdEFycmF5VG9Ud29CeURlbGltaXRlciIsImFycmF5IiwiZGVsaW1pdGVyIiwiYmVmb3JlRGVsaW1pdGVyIiwiYWZ0ZXJEZWxpbWl0ZXIiLCJkZWxpbWl0ZXJJbmRleCIsImluZGV4T2YiLCJzbGljZSIsImRpdmlkZUFycmF5QnlGaWx0ZXIiLCJmaWx0ZXJGdW5jIiwicmVkdWNlIiwicGFzcyIsImZhaWwiLCJpdGVtIl0sIm1hcHBpbmdzIjoiOztBQUVPLFNBQVNBLDBCQUFULENBQW9DLEVBQUVDLEtBQUYsRUFBU0MsU0FBVCxFQUFwQyxFQUEwRDtBQUM3RCxNQUFJQyxlQUFlLEdBQUcsRUFBdEIsQ0FBMEJDLGNBQWMsR0FBRyxFQUEzQztBQUNBLE1BQUlDLGNBQWMsR0FBR0osS0FBSyxDQUFDSyxPQUFOLENBQWNKLFNBQWQsQ0FBckI7QUFDQSxNQUFHRyxjQUFjLElBQUksQ0FBckIsRUFBd0I7QUFDcEJGLElBQUFBLGVBQWUsR0FBR0YsS0FBSyxDQUFDTSxLQUFOLENBQVksQ0FBWixFQUFlRixjQUFmLENBQWxCO0FBQ0FELElBQUFBLGNBQWMsR0FBR0gsS0FBSyxDQUFDTSxLQUFOLENBQVlGLGNBQWMsR0FBRyxDQUE3QixDQUFqQjtBQUNILEdBSEQ7QUFJSUYsRUFBQUEsZUFBZSxHQUFHRixLQUFsQjs7QUFFSixTQUFPLENBQUNFLGVBQUQsRUFBa0JDLGNBQWxCLENBQVA7QUFDSDs7Ozs7Ozs7QUFRTSxTQUFTSSxtQkFBVCxDQUE2QixFQUFFUCxLQUFGLEVBQVNRLFVBQVQsRUFBN0IsRUFBb0Q7QUFDdkQsU0FBT1IsS0FBSyxDQUFDUyxNQUFOLENBQWEsQ0FBQyxDQUFDQyxJQUFELEVBQU9DLElBQVAsQ0FBRCxFQUFlQyxJQUFmLEtBQXdCO0FBQ3hDLFdBQU9KLFVBQVUsQ0FBQ0ksSUFBRCxDQUFWLEdBQW1CLENBQUMsQ0FBQyxHQUFHRixJQUFKLEVBQVVFLElBQVYsQ0FBRCxFQUFrQkQsSUFBbEIsQ0FBbkIsR0FBNkMsQ0FBQ0QsSUFBRCxFQUFPLENBQUMsR0FBR0MsSUFBSixFQUFVQyxJQUFWLENBQVAsQ0FBcEQ7QUFDRCxHQUZJLEVBRUYsQ0FBQyxFQUFELEVBQUssRUFBTCxDQUZFLENBQVA7QUFHSCIsInNvdXJjZXNDb250ZW50IjpbIi8vIGRpdmlkZSBhbiBhcnJheSBpbnRvIHR3byBzZXBhcmF0ZSBhcnJheXMgYnkgYW4gaXRlbSB2YWx1ZSB0aGF0IGVxdWFscyB0aGUgcHJvdmlkZWQgZGVsaW1pdGVyXG4vLyBbJ3FxcScsICctLScsICdlZWUnLCAncHBwJ10gPT4gWydxcXEnXSwgW2VlZScsICdwcHAnXVxuZXhwb3J0IGZ1bmN0aW9uIHNwbGl0QXJyYXlUb1R3b0J5RGVsaW1pdGVyKHsgYXJyYXksIGRlbGltaXRlciB9KSB7XG4gICAgbGV0IGJlZm9yZURlbGltaXRlciA9IFtdLCBhZnRlckRlbGltaXRlciA9IFtdO1xuICAgIGxldCBkZWxpbWl0ZXJJbmRleCA9IGFycmF5LmluZGV4T2YoZGVsaW1pdGVyKVxuICAgIGlmKGRlbGltaXRlckluZGV4ID49IDAgKXtcbiAgICAgICAgYmVmb3JlRGVsaW1pdGVyID0gYXJyYXkuc2xpY2UoMCwgZGVsaW1pdGVySW5kZXgpXG4gICAgICAgIGFmdGVyRGVsaW1pdGVyID0gYXJyYXkuc2xpY2UoZGVsaW1pdGVySW5kZXggKyAxKVxuICAgIH0gZWxzZSBcbiAgICAgICAgYmVmb3JlRGVsaW1pdGVyID0gYXJyYXlcblxuICAgIHJldHVybiBbYmVmb3JlRGVsaW1pdGVyLCBhZnRlckRlbGltaXRlcl0gLy8gcmV0dXJuIGVtcHR5IGFycmF5IGZvciBgYWZ0ZXJgIGRlbGltaXRlciBwYXJhbWV0ZXIuXG59XG5cbi8qKiBcbiAqIFNwbGl0IGFycmF5IHRvIHR3byBhY2NvcmRpbmcgdG8gY29uZGl0aW9uc1xuICogQHJldHVybiBbPGFycmF5IG9mIG1hdGNoaW5nPiwgPGFycmF5IG9mIG5vdCBtYXRjaGluZz5dXG4gKiBFeGFtcGxlOiBcbiAqICAgWydYeicsICdxd3InLCAndFh0J10gd2hlcmUgY29uZGl0aW9uIGlzIHByZXNlbnNlIG9mICdYJyA9PiBbJ1h6JywgJ3RYdCddLCBbJ3F3ciddXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiBkaXZpZGVBcnJheUJ5RmlsdGVyKHsgYXJyYXksIGZpbHRlckZ1bmMgfSkge1xuICAgIHJldHVybiBhcnJheS5yZWR1Y2UoKFtwYXNzLCBmYWlsXSwgaXRlbSkgPT4ge1xuICAgICAgICByZXR1cm4gZmlsdGVyRnVuYyhpdGVtKSA/IFtbLi4ucGFzcywgaXRlbV0sIGZhaWxdIDogW3Bhc3MsIFsuLi5mYWlsLCBpdGVtXV07XG4gICAgICB9LCBbW10sIFtdXSk7ICAgIFxufSJdfQ==

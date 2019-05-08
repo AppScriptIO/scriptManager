@@ -1,7 +1,7 @@
-// check if command argument (string) is a Javascript code that should be evaluated on an imported module. This allows for exposing modules to commandline with javascript code, i.e. execute js in commandline.
-export function isJSCodeToEvaluate({ string }) {
-    if(!string) return false;
-    let symbolsForActingOnExports =  ['(', '.', '['] // exported modules could be function or objects, the operator to evaluate them starts with one of these symbols.
-    return symbolsForActingOnExports.some(symbol => string.startsWith(symbol))
-  }
-  
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.isJSCodeToEvaluate = isJSCodeToEvaluate;
+function isJSCodeToEvaluate({ string }) {
+  if (!string) return false;
+  let symbolsForActingOnExports = ['(', '.', '['];
+  return symbolsForActingOnExports.some(symbol => string.startsWith(symbol));
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9zY3JpcHRNYW5hZ2VyL3V0aWxpdHkvaXNKU0NvZGVUb0V2YWx1YXRlLmpzIl0sIm5hbWVzIjpbImlzSlNDb2RlVG9FdmFsdWF0ZSIsInN0cmluZyIsInN5bWJvbHNGb3JBY3RpbmdPbkV4cG9ydHMiLCJzb21lIiwic3ltYm9sIiwic3RhcnRzV2l0aCJdLCJtYXBwaW5ncyI6IjtBQUNPLFNBQVNBLGtCQUFULENBQTRCLEVBQUVDLE1BQUYsRUFBNUIsRUFBd0M7QUFDM0MsTUFBRyxDQUFDQSxNQUFKLEVBQVksT0FBTyxLQUFQO0FBQ1osTUFBSUMseUJBQXlCLEdBQUksQ0FBQyxHQUFELEVBQU0sR0FBTixFQUFXLEdBQVgsQ0FBakM7QUFDQSxTQUFPQSx5QkFBeUIsQ0FBQ0MsSUFBMUIsQ0FBK0JDLE1BQU0sSUFBSUgsTUFBTSxDQUFDSSxVQUFQLENBQWtCRCxNQUFsQixDQUF6QyxDQUFQO0FBQ0QiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBjaGVjayBpZiBjb21tYW5kIGFyZ3VtZW50IChzdHJpbmcpIGlzIGEgSmF2YXNjcmlwdCBjb2RlIHRoYXQgc2hvdWxkIGJlIGV2YWx1YXRlZCBvbiBhbiBpbXBvcnRlZCBtb2R1bGUuIFRoaXMgYWxsb3dzIGZvciBleHBvc2luZyBtb2R1bGVzIHRvIGNvbW1hbmRsaW5lIHdpdGggamF2YXNjcmlwdCBjb2RlLCBpLmUuIGV4ZWN1dGUganMgaW4gY29tbWFuZGxpbmUuXG5leHBvcnQgZnVuY3Rpb24gaXNKU0NvZGVUb0V2YWx1YXRlKHsgc3RyaW5nIH0pIHtcbiAgICBpZighc3RyaW5nKSByZXR1cm4gZmFsc2U7XG4gICAgbGV0IHN5bWJvbHNGb3JBY3RpbmdPbkV4cG9ydHMgPSAgWycoJywgJy4nLCAnWyddIC8vIGV4cG9ydGVkIG1vZHVsZXMgY291bGQgYmUgZnVuY3Rpb24gb3Igb2JqZWN0cywgdGhlIG9wZXJhdG9yIHRvIGV2YWx1YXRlIHRoZW0gc3RhcnRzIHdpdGggb25lIG9mIHRoZXNlIHN5bWJvbHMuXG4gICAgcmV0dXJuIHN5bWJvbHNGb3JBY3RpbmdPbkV4cG9ydHMuc29tZShzeW1ib2wgPT4gc3RyaW5nLnN0YXJ0c1dpdGgoc3ltYm9sKSlcbiAgfVxuICAiXX0=

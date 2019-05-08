@@ -1,47 +1,48 @@
-// RETHINKDB
+"use strict";
 {
-    let image = 'rethinkdb:latest', // this container should have docker client & docker-compose installed in.
-        processCommand = 'docker',
-        containerCommand = ``,
-        containerPrefix = 'scriptManager_rehinkdb', 
-        networkAlais = 'rethinkdb'
+  let image = 'rethinkdb:latest',
+  processCommand = 'docker',
+  containerCommand = ``,
+  containerPrefix = 'scriptManager_rehinkdb',
+  networkAlais = 'rethinkdb';
 
-    let processArg = [
-            `run`,
-            `--rm`, // automatically remove after container exists.
-            // `--interactive --tty`, // allocate a terminal - this allows for interacting with the container process.
-            // `--volume ${application.hostPath}:${application.pathInContainer}`,
-            `--network-alias ${networkAlais}`,
-            `--network=${networkName}`,
-            `-P `
-            // `-P`
-        ]
-        .concat([
-            `--name ${containerPrefix}`,
-            `${image}`
-        ])
-    console.log(
-        `%s \n %s \n %s`,
-        `\x1b[3m\x1b[2m > ${processCommand} ${processArg.join(' ')}\x1b[0m`,
-        `\t\x1b[3m\x1b[2mimage:\x1b[0m ${image}`,
-        `\t\x1b[3m\x1b[2mcommand:\x1b[0m ${containerCommand}`
-    )    
-    
-    let childProcess = spawn(processCommand, processArg, { 
-        // detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ],
-        detached: false, shell: true, stdio: [ 'ignore', 'ignore', 'ignore' ],
-        env: process.env // pass environment variables like process.env.PWD to spawn process
-    })
-    childProcessArray.push(childProcess)
-    // childProcess.unref() // prevent parent from waiting to child process and un reference child from parent's event loop.
-    console.log(`\x1b[45m%s\x1b[0m`,`[NODE HOST MACHINE] PID: Child ${childProcess.pid}`)
-    childProcess.on('error', function( err ){ throw err })
-    childProcess.on('exit', () => {
-        console.log(`\x1b[41m%s\x1b[0m`,`[NODE HOST MACHINE] PID: Child ${childProcess.pid} terminated.`)
-        spawnSync('docker', [`kill ${containerPrefix}`], { 
-            detached: false, shell: true, stdio: 'inherit',
-            env: process.env // pass environment variables like process.env.PWD to spawn process
-        })    
-    })
+  let processArg = [
+  `run`,
+  `--rm`,
+
+
+  `--network-alias ${networkAlais}`,
+  `--network=${networkName}`,
+  `-P `].
+
+
+  concat([
+  `--name ${containerPrefix}`,
+  `${image}`]);
+
+  console.log(
+  `%s \n %s \n %s`,
+  `\x1b[3m\x1b[2m > ${processCommand} ${processArg.join(' ')}\x1b[0m`,
+  `\t\x1b[3m\x1b[2mimage:\x1b[0m ${image}`,
+  `\t\x1b[3m\x1b[2mcommand:\x1b[0m ${containerCommand}`);
+
+
+  let childProcess = spawn(processCommand, processArg, {
+
+    detached: false, shell: true, stdio: ['ignore', 'ignore', 'ignore'],
+    env: process.env });
+
+  childProcessArray.push(childProcess);
+
+  console.log(`\x1b[45m%s\x1b[0m`, `[NODE HOST MACHINE] PID: Child ${childProcess.pid}`);
+  childProcess.on('error', function (err) {throw err;});
+  childProcess.on('exit', () => {
+    console.log(`\x1b[41m%s\x1b[0m`, `[NODE HOST MACHINE] PID: Child ${childProcess.pid} terminated.`);
+    spawnSync('docker', [`kill ${containerPrefix}`], {
+      detached: false, shell: true, stdio: 'inherit',
+      env: process.env });
+
+  });
 
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9ydW5JbkNvbnRhaW5lci9jb250YWluZXJTY3JpcHQvcmV0aGlua2RiLmpzIl0sIm5hbWVzIjpbImltYWdlIiwicHJvY2Vzc0NvbW1hbmQiLCJjb250YWluZXJDb21tYW5kIiwiY29udGFpbmVyUHJlZml4IiwibmV0d29ya0FsYWlzIiwicHJvY2Vzc0FyZyIsIm5ldHdvcmtOYW1lIiwiY29uY2F0IiwiY29uc29sZSIsImxvZyIsImpvaW4iLCJjaGlsZFByb2Nlc3MiLCJzcGF3biIsImRldGFjaGVkIiwic2hlbGwiLCJzdGRpbyIsImVudiIsInByb2Nlc3MiLCJjaGlsZFByb2Nlc3NBcnJheSIsInB1c2giLCJwaWQiLCJvbiIsImVyciIsInNwYXduU3luYyJdLCJtYXBwaW5ncyI6IjtBQUNBO0FBQ0ksTUFBSUEsS0FBSyxHQUFHLGtCQUFaO0FBQ0lDLEVBQUFBLGNBQWMsR0FBRyxRQURyQjtBQUVJQyxFQUFBQSxnQkFBZ0IsR0FBSSxFQUZ4QjtBQUdJQyxFQUFBQSxlQUFlLEdBQUcsd0JBSHRCO0FBSUlDLEVBQUFBLFlBQVksR0FBRyxXQUpuQjs7QUFNQSxNQUFJQyxVQUFVLEdBQUc7QUFDUixPQURRO0FBRVIsUUFGUTs7O0FBS1IscUJBQWtCRCxZQUFhLEVBTHZCO0FBTVIsZUFBWUUsV0FBWSxFQU5oQjtBQU9SLE9BUFE7OztBQVVaQyxFQUFBQSxNQVZZLENBVUw7QUFDSCxZQUFTSixlQUFnQixFQUR0QjtBQUVILEtBQUVILEtBQU0sRUFGTCxDQVZLLENBQWpCOztBQWNBUSxFQUFBQSxPQUFPLENBQUNDLEdBQVI7QUFDSyxrQkFETDtBQUVLLHNCQUFtQlIsY0FBZSxJQUFHSSxVQUFVLENBQUNLLElBQVgsQ0FBZ0IsR0FBaEIsQ0FBcUIsU0FGL0Q7QUFHSyxtQ0FBZ0NWLEtBQU0sRUFIM0M7QUFJSyxxQ0FBa0NFLGdCQUFpQixFQUp4RDs7O0FBT0EsTUFBSVMsWUFBWSxHQUFHQyxLQUFLLENBQUNYLGNBQUQsRUFBaUJJLFVBQWpCLEVBQTZCOztBQUVqRFEsSUFBQUEsUUFBUSxFQUFFLEtBRnVDLEVBRWhDQyxLQUFLLEVBQUUsSUFGeUIsRUFFbkJDLEtBQUssRUFBRSxDQUFFLFFBQUYsRUFBWSxRQUFaLEVBQXNCLFFBQXRCLENBRlk7QUFHakRDLElBQUFBLEdBQUcsRUFBRUMsT0FBTyxDQUFDRCxHQUhvQyxFQUE3QixDQUF4Qjs7QUFLQUUsRUFBQUEsaUJBQWlCLENBQUNDLElBQWxCLENBQXVCUixZQUF2Qjs7QUFFQUgsRUFBQUEsT0FBTyxDQUFDQyxHQUFSLENBQWEsbUJBQWIsRUFBaUMsa0NBQWlDRSxZQUFZLENBQUNTLEdBQUksRUFBbkY7QUFDQVQsRUFBQUEsWUFBWSxDQUFDVSxFQUFiLENBQWdCLE9BQWhCLEVBQXlCLFVBQVVDLEdBQVYsRUFBZSxDQUFFLE1BQU1BLEdBQU4sQ0FBVyxDQUFyRDtBQUNBWCxFQUFBQSxZQUFZLENBQUNVLEVBQWIsQ0FBZ0IsTUFBaEIsRUFBd0IsTUFBTTtBQUMxQmIsSUFBQUEsT0FBTyxDQUFDQyxHQUFSLENBQWEsbUJBQWIsRUFBaUMsa0NBQWlDRSxZQUFZLENBQUNTLEdBQUksY0FBbkY7QUFDQUcsSUFBQUEsU0FBUyxDQUFDLFFBQUQsRUFBVyxDQUFFLFFBQU9wQixlQUFnQixFQUF6QixDQUFYLEVBQXdDO0FBQzdDVSxNQUFBQSxRQUFRLEVBQUUsS0FEbUMsRUFDNUJDLEtBQUssRUFBRSxJQURxQixFQUNmQyxLQUFLLEVBQUUsU0FEUTtBQUU3Q0MsTUFBQUEsR0FBRyxFQUFFQyxPQUFPLENBQUNELEdBRmdDLEVBQXhDLENBQVQ7O0FBSUgsR0FORDs7QUFRSCIsInNvdXJjZXNDb250ZW50IjpbIi8vIFJFVEhJTktEQlxue1xuICAgIGxldCBpbWFnZSA9ICdyZXRoaW5rZGI6bGF0ZXN0JywgLy8gdGhpcyBjb250YWluZXIgc2hvdWxkIGhhdmUgZG9ja2VyIGNsaWVudCAmIGRvY2tlci1jb21wb3NlIGluc3RhbGxlZCBpbi5cbiAgICAgICAgcHJvY2Vzc0NvbW1hbmQgPSAnZG9ja2VyJyxcbiAgICAgICAgY29udGFpbmVyQ29tbWFuZCA9IGBgLFxuICAgICAgICBjb250YWluZXJQcmVmaXggPSAnc2NyaXB0TWFuYWdlcl9yZWhpbmtkYicsIFxuICAgICAgICBuZXR3b3JrQWxhaXMgPSAncmV0aGlua2RiJ1xuXG4gICAgbGV0IHByb2Nlc3NBcmcgPSBbXG4gICAgICAgICAgICBgcnVuYCxcbiAgICAgICAgICAgIGAtLXJtYCwgLy8gYXV0b21hdGljYWxseSByZW1vdmUgYWZ0ZXIgY29udGFpbmVyIGV4aXN0cy5cbiAgICAgICAgICAgIC8vIGAtLWludGVyYWN0aXZlIC0tdHR5YCwgLy8gYWxsb2NhdGUgYSB0ZXJtaW5hbCAtIHRoaXMgYWxsb3dzIGZvciBpbnRlcmFjdGluZyB3aXRoIHRoZSBjb250YWluZXIgcHJvY2Vzcy5cbiAgICAgICAgICAgIC8vIGAtLXZvbHVtZSAke2FwcGxpY2F0aW9uLmhvc3RQYXRofToke2FwcGxpY2F0aW9uLnBhdGhJbkNvbnRhaW5lcn1gLFxuICAgICAgICAgICAgYC0tbmV0d29yay1hbGlhcyAke25ldHdvcmtBbGFpc31gLFxuICAgICAgICAgICAgYC0tbmV0d29yaz0ke25ldHdvcmtOYW1lfWAsXG4gICAgICAgICAgICBgLVAgYFxuICAgICAgICAgICAgLy8gYC1QYFxuICAgICAgICBdXG4gICAgICAgIC5jb25jYXQoW1xuICAgICAgICAgICAgYC0tbmFtZSAke2NvbnRhaW5lclByZWZpeH1gLFxuICAgICAgICAgICAgYCR7aW1hZ2V9YFxuICAgICAgICBdKVxuICAgIGNvbnNvbGUubG9nKFxuICAgICAgICBgJXMgXFxuICVzIFxcbiAlc2AsXG4gICAgICAgIGBcXHgxYlszbVxceDFiWzJtID4gJHtwcm9jZXNzQ29tbWFuZH0gJHtwcm9jZXNzQXJnLmpvaW4oJyAnKX1cXHgxYlswbWAsXG4gICAgICAgIGBcXHRcXHgxYlszbVxceDFiWzJtaW1hZ2U6XFx4MWJbMG0gJHtpbWFnZX1gLFxuICAgICAgICBgXFx0XFx4MWJbM21cXHgxYlsybWNvbW1hbmQ6XFx4MWJbMG0gJHtjb250YWluZXJDb21tYW5kfWBcbiAgICApICAgIFxuICAgIFxuICAgIGxldCBjaGlsZFByb2Nlc3MgPSBzcGF3bihwcm9jZXNzQ29tbWFuZCwgcHJvY2Vzc0FyZywgeyBcbiAgICAgICAgLy8gZGV0YWNoZWQ6IGZhbHNlLCBzaGVsbDogdHJ1ZSwgc3RkaW86IFsgJ2luaGVyaXQnLCAnaW5oZXJpdCcsICdpbmhlcml0JywgJ2lwYycgXSxcbiAgICAgICAgZGV0YWNoZWQ6IGZhbHNlLCBzaGVsbDogdHJ1ZSwgc3RkaW86IFsgJ2lnbm9yZScsICdpZ25vcmUnLCAnaWdub3JlJyBdLFxuICAgICAgICBlbnY6IHByb2Nlc3MuZW52IC8vIHBhc3MgZW52aXJvbm1lbnQgdmFyaWFibGVzIGxpa2UgcHJvY2Vzcy5lbnYuUFdEIHRvIHNwYXduIHByb2Nlc3NcbiAgICB9KVxuICAgIGNoaWxkUHJvY2Vzc0FycmF5LnB1c2goY2hpbGRQcm9jZXNzKVxuICAgIC8vIGNoaWxkUHJvY2Vzcy51bnJlZigpIC8vIHByZXZlbnQgcGFyZW50IGZyb20gd2FpdGluZyB0byBjaGlsZCBwcm9jZXNzIGFuZCB1biByZWZlcmVuY2UgY2hpbGQgZnJvbSBwYXJlbnQncyBldmVudCBsb29wLlxuICAgIGNvbnNvbGUubG9nKGBcXHgxYls0NW0lc1xceDFiWzBtYCxgW05PREUgSE9TVCBNQUNISU5FXSBQSUQ6IENoaWxkICR7Y2hpbGRQcm9jZXNzLnBpZH1gKVxuICAgIGNoaWxkUHJvY2Vzcy5vbignZXJyb3InLCBmdW5jdGlvbiggZXJyICl7IHRocm93IGVyciB9KVxuICAgIGNoaWxkUHJvY2Vzcy5vbignZXhpdCcsICgpID0+IHtcbiAgICAgICAgY29uc29sZS5sb2coYFxceDFiWzQxbSVzXFx4MWJbMG1gLGBbTk9ERSBIT1NUIE1BQ0hJTkVdIFBJRDogQ2hpbGQgJHtjaGlsZFByb2Nlc3MucGlkfSB0ZXJtaW5hdGVkLmApXG4gICAgICAgIHNwYXduU3luYygnZG9ja2VyJywgW2BraWxsICR7Y29udGFpbmVyUHJlZml4fWBdLCB7IFxuICAgICAgICAgICAgZGV0YWNoZWQ6IGZhbHNlLCBzaGVsbDogdHJ1ZSwgc3RkaW86ICdpbmhlcml0JyxcbiAgICAgICAgICAgIGVudjogcHJvY2Vzcy5lbnYgLy8gcGFzcyBlbnZpcm9ubWVudCB2YXJpYWJsZXMgbGlrZSBwcm9jZXNzLmVudi5QV0QgdG8gc3Bhd24gcHJvY2Vzc1xuICAgICAgICB9KSAgICBcbiAgICB9KVxuXG59XG4iXX0=

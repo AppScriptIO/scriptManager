@@ -1,9 +1,10 @@
-// NETWORK
-let networkName = 'scriptManager'
+"use strict";
+let networkName = 'scriptManager';
 {
-    let createNetwork = spawnSync('docker', [`network create ${networkName}`], { 
-        detached: false, shell: true, stdio: [ 'inherit', 'inherit', 'ignore'],
-        env: process.env // pass environment variables like process.env.PWD to spawn process
-    })
-    if(createNetwork.status == 1) console.log('Docker network already exist.')
+  let createNetwork = spawnSync('docker', [`network create ${networkName}`], {
+    detached: false, shell: true, stdio: ['inherit', 'inherit', 'ignore'],
+    env: process.env });
+
+  if (createNetwork.status == 1) console.log('Docker network already exist.');
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NvdXJjZS9ydW5JbkNvbnRhaW5lci9jb250YWluZXJTY3JpcHQvbmV0d29yay5qcyJdLCJuYW1lcyI6WyJuZXR3b3JrTmFtZSIsImNyZWF0ZU5ldHdvcmsiLCJzcGF3blN5bmMiLCJkZXRhY2hlZCIsInNoZWxsIiwic3RkaW8iLCJlbnYiLCJwcm9jZXNzIiwic3RhdHVzIiwiY29uc29sZSIsImxvZyJdLCJtYXBwaW5ncyI6IjtBQUNBLElBQUlBLFdBQVcsR0FBRyxlQUFsQjtBQUNBO0FBQ0ksTUFBSUMsYUFBYSxHQUFHQyxTQUFTLENBQUMsUUFBRCxFQUFXLENBQUUsa0JBQWlCRixXQUFZLEVBQS9CLENBQVgsRUFBOEM7QUFDdkVHLElBQUFBLFFBQVEsRUFBRSxLQUQ2RCxFQUN0REMsS0FBSyxFQUFFLElBRCtDLEVBQ3pDQyxLQUFLLEVBQUUsQ0FBRSxTQUFGLEVBQWEsU0FBYixFQUF3QixRQUF4QixDQURrQztBQUV2RUMsSUFBQUEsR0FBRyxFQUFFQyxPQUFPLENBQUNELEdBRjBELEVBQTlDLENBQTdCOztBQUlBLE1BQUdMLGFBQWEsQ0FBQ08sTUFBZCxJQUF3QixDQUEzQixFQUE4QkMsT0FBTyxDQUFDQyxHQUFSLENBQVksK0JBQVo7QUFDakMiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBORVRXT1JLXG5sZXQgbmV0d29ya05hbWUgPSAnc2NyaXB0TWFuYWdlcidcbntcbiAgICBsZXQgY3JlYXRlTmV0d29yayA9IHNwYXduU3luYygnZG9ja2VyJywgW2BuZXR3b3JrIGNyZWF0ZSAke25ldHdvcmtOYW1lfWBdLCB7IFxuICAgICAgICBkZXRhY2hlZDogZmFsc2UsIHNoZWxsOiB0cnVlLCBzdGRpbzogWyAnaW5oZXJpdCcsICdpbmhlcml0JywgJ2lnbm9yZSddLFxuICAgICAgICBlbnY6IHByb2Nlc3MuZW52IC8vIHBhc3MgZW52aXJvbm1lbnQgdmFyaWFibGVzIGxpa2UgcHJvY2Vzcy5lbnYuUFdEIHRvIHNwYXduIHByb2Nlc3NcbiAgICB9KVxuICAgIGlmKGNyZWF0ZU5ldHdvcmsuc3RhdHVzID09IDEpIGNvbnNvbGUubG9nKCdEb2NrZXIgbmV0d29yayBhbHJlYWR5IGV4aXN0LicpXG59XG4iXX0=
