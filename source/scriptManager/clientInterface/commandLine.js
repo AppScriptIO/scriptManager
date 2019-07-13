@@ -41,13 +41,14 @@ cliInterface().catch(error => console.error(error))
  * [note] distinguish between the ownConfiguration and the target application configuration.
  */
 async function cliInterface({
-  envrironmentArgument = process.env,
   commandArgument = process.argv.slice(2) /* remove first two arguments `runtime`, `module path` */,
+  argumentDelimiter = '-', // delimiter symbol for differentiating own arguments from the target script arguments. using `-` instead of `--` because yarn removes the double slash (although in future version it won't, as was mentioned).
   currentDirectory = process.env.PWD,
+  envrironmentArgument = process.env,
   scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
   targetProjectConfigPath, // the path to the configuration file of the target application. relative path to target project configuration from current working directory.
-  argumentDelimiter = '-', // delimiter symbol for differentiating own arguments from the target script arguments. using `-` instead of `--` because yarn removes the double slash (although in future version it won't, as was mentioned).
   jsCodeToEvaluate,
+  shouldCompileScript,
 } = []) {
   /** Argument initialization, validation, sanitization
    * get arguments - API of accepted varibales from (priority list)
@@ -63,72 +64,63 @@ async function cliInterface({
   // create command arguments for target script.
   process.argv = [process.argv[0], process.argv[1] /* should be substituted by full target script path after lookup */, ...targetScriptCommandArgument]
 
-  const isEvaluateCodeInterface = isJSCodeToEvaluate({ string: nonPairArgument[0] })
-
-  if (isEvaluateCodeInterface) {
-    targetProjectConfigPath = targetProjectConfigPath || standartInputData || envrironmentArgument.targetConfig
-    scriptKeyToInvoke = scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke
-  } else {
-    scriptKeyToInvoke = scriptKeyToInvoke || parsedCommandArgument.scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke || nonPairArgument[0] // allow for shorthand command call.
-    jsCodeToEvaluate = jsCodeToEvaluate || parsedCommandArgument.jsCodeToEvaluate || envrironmentArgument.scriptKeyToInvoke || nonPairArgument[1] // allow for shorthand command call.
-
-    // target application's configuration file parameter hierarchy
-    targetProjectConfigPath = targetProjectConfigPath || parsedCommandArgument.targetConfig || standartInputData /* stdin input */ || envrironmentArgument.targetConfig
-
-    process.argv[1] = scriptKeyToInvoke || process.argv[1] //The path to the script should be changed after script lookup by succeeding modules.
+  // target application configuration file:
+  let configurationFileLookupCallback = configPath => {
+    configPath = configurationFileLookup({
+      configurationPath: configPath,
+      currentDirectory,
+      configurationBasePath: ownConfiguration.targetApp.configurationBasePath,
+    }).path
+    // assret entrypoint configuration objects/options exist.
+    console.assert(require.resolve(configPath), '\x1b[41m%s\x1b[0m', `❌ Configuration file doesn't exist in ${configPath}`)
+    return configPath
   }
 
-  // target application configuration file:
-  ;({ path: targetProjectConfigPath } = configurationFileLookup({
-    configurationPath: targetProjectConfigPath,
-    currentDirectory,
-    configurationBasePath: ownConfiguration.targetApp.configurationBasePath,
-  }))
-  // assret entrypoint configuration objects/options exist.
-  console.assert(require.resolve(targetProjectConfigPath), '\x1b[41m%s\x1b[0m', `❌ Configuration file doesn't exist in ${targetProjectConfigPath}`)
+  // accepts a single argument string to be evaluated as JS code, in addition to environment variables for execution of the programmatic api.
+  async function evaluateInterface() {
+    scriptKeyToInvoke ||= envrironmentArgument.scriptKeyToInvoke
+    targetProjectConfigPath ||= standartInputData || envrironmentArgument.targetConfig
+    shouldCompileScript ||= envrironmentArgument.shouldCompileScript
+    targetProjectConfigPath = configurationFileLookupCallback(targetProjectConfigPath)
+    // string js code that will be used on the callback.
+    let codeToEvaluateForOwnModule = ownCommandArgument[0],
+      defaultEvaluateCallValueForFirstParameter = { targetProjectConfigPath, scriptKeyToInvoke, jsCodeToEvaluate, shouldCompileScript }
+    // execute api using string evaluated code.
+    let contextEnvironment = vm.createContext(
+      Object.assign(global, {
+        _requiredModule_: async (...args) => {
+          // similar to a curry function wrapper, setting default values
+          // process args setting default values
+          args[0] = Object.assign(defaultEvaluateCallValueForFirstParameter, args[0]) // these are is specific number of parameters that `scriptManager` function has
+          await scriptManager(...args).catch(error => console.log(error))
+        },
+      }),
+    )
+    try {
+      // where `_` available in context of vm, calls `scriptManager` module.
+      let vmScript = new vm.Script(`_requiredModule_${codeToEvaluateForOwnModule}`, {
+        filename: path.resolve('../') /* add file to Node's event loop stack trace */,
+      })
+
+      vmScript.runInContext(contextEnvironment, { breakOnSigint: true /* break when Ctrl+C is received. */ })
+    } catch (error) {
+      console.log(`❌ Running 'vm runInContext' code failed during execution.`)
+      throw error
+    }
+  }
+
+  // accepts command arguments or environment variables as parameters for the execution of the programmatic api.
+  async function passedArgumentInterface() {
+    scriptKeyToInvoke ||= parsedCommandArgument.scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke || nonPairArgument[0] // allow for shorthand command call.
+    jsCodeToEvaluate ||= parsedCommandArgument.jsCodeToEvaluate || envrironmentArgument.scriptKeyToInvoke || nonPairArgument[1]
+    shouldCompileScript ||= parsedCommandArgument.shouldCompileScript || envrironmentArgument.shouldCompileScript || nonPairArgument[2]
+    process.argv[1] = scriptKeyToInvoke || process.argv[1] //The path to the script should be changed after script lookup by succeeding modules.
+    // target application's configuration file parameter hierarchy
+    targetProjectConfigPath ||= parsedCommandArgument.targetConfig || standartInputData /* stdin input */ || envrironmentArgument.targetConfig
+    targetProjectConfigPath = configurationFileLookupCallback(targetProjectConfigPath)
+    await scriptManager({ targetProjectConfigPath, scriptKeyToInvoke, jsCodeToEvaluate, shouldCompileScript }).catch(error => console.error(error))
+  }
 
   // check if the first argument for is a Javascript code that should be evaluated on an imported module.
-  if (isEvaluateCodeInterface)
-    evaluateCodeInterface({
-      codeToEvaluateForOwnModule: ownCommandArgument[0],
-      defaultEvaluateCallValueForFirstParameter: { targetProjectConfigPath, scriptKeyToInvoke, jsCodeToEvaluate },
-    }).catch(error => console.error(error))
-  else
-    await scriptManager({
-      targetProjectConfigPath,
-      scriptKeyToInvoke,
-      jsCodeToEvaluate,
-    }).catch(error => {
-      console.error(error)
-    })
-}
-
-// execute api using string evaluated code.
-async function evaluateCodeInterface({
-  codeToEvaluateForOwnModule, // string js code that will be used on the callback.
-  defaultEvaluateCallValueForFirstParameter = {},
-  callback = scriptManager,
-} = {}) {
-  let contextEnvironment = vm.createContext(
-    Object.assign(global, {
-      _requiredModule_: async (...args) => {
-        // similar to a curry function wrapper, setting default values
-        // process args setting default values
-        args[0] = Object.assign(defaultEvaluateCallValueForFirstParameter, args[0]) // these are is specific number of parameters that `scriptManager` function has
-        await callback(...args).catch(error => console.log(error))
-      },
-    }),
-  )
-
-  try {
-    // where `_` available in context of vm, calls `scriptManager` module.
-    let vmScript = new vm.Script(`_requiredModule_${codeToEvaluateForOwnModule}`, {
-      filename: path.resolve('../') /* add file to Node's event loop stack trace */,
-    })
-
-    vmScript.runInContext(contextEnvironment, { breakOnSigint: true /* break when Ctrl+C is received. */ })
-  } catch (error) {
-    console.log(`❌ Running 'vm runInContext' code failed during execution.`)
-    throw error
-  }
+  isJSCodeToEvaluate({ string: nonPairArgument[0] }) ? await evaluateInterface() : await passedArgumentInterface()
 }

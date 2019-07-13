@@ -8,12 +8,11 @@ process.on('SIGINT', () => {
   process.exit(0)
 })
 
-// TODO: Add support for multiple project to be managed and multiple scripts to be run and tracked.
-
 export async function scriptManager({
   targetProjectConfigPath, // configuration object of the target project.
   scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
   jsCodeToEvaluate, // js to evaluate on the required script => 'require(<scriptPath>)<evaluate js>'
+  shouldCompileScript = false, // compile using the target projects's configuration files.
 }) {
   console.assert(scriptKeyToInvoke, '\x1b[41m%s\x1b[0m', '❌ `scriptKeyToInvoke` parameter must be set.')
 
@@ -35,9 +34,11 @@ export async function scriptManager({
     // Assuming script is synchronous
     scriptConfig: scriptConfiguration,
     jsCodeToEvaluate,
+    targetProject: project, // used for compilation functionality.
+    shouldCompileScript,
     parameter: {
       api: {
-        project: project,
+        project: project, // passed to the executed target script.
       }, // pass project api
     },
   }).catch(error => {

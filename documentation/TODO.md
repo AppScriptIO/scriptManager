@@ -9,3 +9,5 @@
 - 
 
 - Describe better the error of default behavior where the exported script must be a function. The error currently thrown for trying to execute a non function exported object: `TypeError: (0 , _script.source) is not a function`
+
+- Add support for multiple project to be managed and multiple scripts to be run and tracked.
