@@ -2,6 +2,7 @@ import filesystem from 'fs'
 import path from 'path'
 import { execute, lookup } from '@dependency/scriptExecution'
 import { Project } from './Project.class.js'
+import { Compiler } from '@dependency/javascriptTranspilation'
 
 process.on('SIGINT', () => {
   console.log('Caught interrupt signal - scriptManager container level')
@@ -30,12 +31,19 @@ export async function scriptManager({
     throw error
   })
 
+  if (shouldCompileScript) {
+    let compiler = new Compiler({ babelTransformConfig: targetProject.configuration.configuration.transpilation.babelConfig /** Search for configuration files from target project */ })
+    compiler.requireHook({ restrictToTargetProject: false /* Transpile files of the target project */ })
+    // process.on('exit', () => {
+    //   console.log(compiler.loadedFiles.map(value => value.filename))
+    //   console.log(compiler.babelRegisterConfig.ignore)
+    // })
+  }
+
   await execute({
     // Assuming script is synchronous
     scriptConfig: scriptConfiguration,
     jsCodeToEvaluate,
-    targetProject: project, // used for compilation functionality.
-    shouldCompileScript,
     parameter: {
       api: {
         project: project, // passed to the executed target script.
