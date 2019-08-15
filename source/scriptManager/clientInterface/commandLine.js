@@ -43,7 +43,7 @@ cliInterface().catch(error => console.error(error))
 async function cliInterface({
   commandArgument = process.argv.slice(2) /* remove first two arguments `runtime`, `module path` */,
   argumentDelimiter = '-', // delimiter symbol for differentiating own arguments from the target script arguments. using `-` instead of `--` because yarn removes the double slash (although in future version it won't, as was mentioned).
-  currentDirectory = process.env.PWD,
+  currentDirectory = process.env.PWD || process.cwd() /*In case run in Windows where PWD is not set.*/,
   envrironmentArgument = process.env,
   scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
   targetProjectConfigPath, // the path to the configuration file of the target application. relative path to target project configuration from current working directory.

@@ -7,12 +7,7 @@
         "scriptManagerInContainer": "./entrypoint/cliRunInContainer/index.js"
     },
     "scripts": {
-        "setup": "yarn install --production=false",
-        "sleep": "./source/entrypoint/cli/transpilation.entrypoint.js scriptKeyToInvoke=sleep jsCodeToEvaluate='.setInterval()'",
-        "test": "yarn run scriptManager test \"({ testPath: './test' })\"",
-        "release": "yarn run scriptManager buildSourceCode \".createGithubBranchedRelease({ tagName: '1.0.13' })\"",
-        "build": "yarn run scriptManager buildSourceCode \".build({})\" ",
-        "updateGithubVersions": "yarn run scriptManager versionGithub \".checkVersion({ shouldUpdatePackage: true })\""
+        "buildAndRelease": "yarn run scriptManager shouldCompileScript=true JSProject/buildAndRelease \".moduleProject({})\""
     },
     "dependencies": {
         "@dependency/JSModuleTypeCheck": "https://github.com/AppScriptIO/JSModuleTypeCheck#semver:^1.x.x",
@@ -35,6 +30,7 @@
     "devDependencies": {
         "@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript#semver:^1.x.x",
         "@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis#semver:^1.x.x",
+        "@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x",
         "@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager#semver:^1.x.x",
         "typescript": "^3.3.3333"
     }
