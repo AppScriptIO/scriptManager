@@ -27,7 +27,9 @@ cliInterface().catch(error => console.error(error))
  *     USAGE:
  *       `yarn run scriptManager "({ scriptKeyToInvoke: 'sleep' })"`
  *       `yarn run scriptManager "({ scriptKeyToInvoke: 'sleep', jsCodeToEvaluate: '.setInterval()' })"`
+ *       `yarn run scriptManager ".apply()"` - take note that also '.' is considered evaluate code.
  *  2. parsed arguments interface: This implementation, in contrast to the other code evaluation interface, requires mapping the needed commandline parsed arguments to the method parameters.
+ *      Note: this contains evaluation code that is used by subsequent modules like "scriptExecution"
  *     USAGE:
  *      script invokation from shell using: npx || yarn run || <pathToScript e.g. './node_modules/.bin/scriptManager'>   (`yarn run` is prefered over `npx` because it correctly catches errors, i.e. its implementation is more complete.)
  *      $ `yarn run scriptManager targetProjectConfigPath=<> scriptKeyToInvoke=<filename> jsCodeToEvaluate=<js code> - <arguments passed to target script>`
@@ -76,7 +78,7 @@ async function cliInterface({
     return configPath
   }
 
-  // accepts a single argument string to be evaluated as JS code, in addition to environment variables for execution of the programmatic api.
+  // [1] accepts a single argument string to be evaluated as JS code, in addition to environment variables for execution of the programmatic api.
   async function evaluateInterface() {
     scriptKeyToInvoke ||= envrironmentArgument.scriptKeyToInvoke
     targetProjectConfigPath ||= standartInputData || envrironmentArgument.targetConfig
@@ -88,7 +90,9 @@ async function cliInterface({
     // execute api using string evaluated code.
     let contextEnvironment = vm.createContext(
       Object.assign(global, {
-        _requiredModule_: async (...args) => {
+        // wrapper function aroung 'scriptManager' in order to apply default values
+        // TODO: User symbols if possible instead of a string for the wrapping function.
+        _requiredModuleScriptManagerWrapper_: async (...args) => {
           // similar to a curry function wrapper, setting default values
           // process args setting default values
           args[0] = Object.assign(defaultEvaluateCallValueForFirstParameter, args[0]) // these are is specific number of parameters that `scriptManager` function has
@@ -98,7 +102,7 @@ async function cliInterface({
     )
     try {
       // where `_` available in context of vm, calls `scriptManager` module.
-      let vmScript = new vm.Script(`_requiredModule_${codeToEvaluateForOwnModule}`, {
+      let vmScript = new vm.Script(`_requiredModuleScriptManagerWrapper_${codeToEvaluateForOwnModule}`, {
         filename: path.resolve('../') /* add file to Node's event loop stack trace */,
       })
 
@@ -109,7 +113,7 @@ async function cliInterface({
     }
   }
 
-  // accepts command arguments or environment variables as parameters for the execution of the programmatic api.
+  // [2] accepts command arguments or environment variables as parameters for the execution of the programmatic api.
   async function passedArgumentInterface() {
     scriptKeyToInvoke ||= parsedCommandArgument.scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke || nonPairArgument[0] // allow for shorthand command call.
     jsCodeToEvaluate ||= parsedCommandArgument.jsCodeToEvaluate || envrironmentArgument.scriptKeyToInvoke || nonPairArgument[1]
