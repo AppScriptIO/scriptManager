@@ -2,8 +2,8 @@
 export function isJSCodeToEvaluate({ 
   string, 
   // e.g. '(' for executing function, '.' maybe used through '.apply' to execute 'scriptManager' function.
-  symbolsForActingOnExports = ['(', '.', '['] // exported modules could be function or objects, the operator to evaluate them starts with one of these symbols.
+  symbolsForActingOnExports = [new RegExp(`^\\(`), new RegExp('^\\.(?!\\/).*'), new RegExp(`^\\[`) ] // exported modules could be function or objects, the operator to evaluate them starts with one of these symbols.
 }) {
   if (!string) return false
-  return symbolsForActingOnExports.some(symbol => string.startsWith(symbol))
+  return symbolsForActingOnExports.some(symbol => symbol.test(string))
 }
