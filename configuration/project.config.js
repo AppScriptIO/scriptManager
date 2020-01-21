@@ -23,7 +23,7 @@ const ownConfig = {
   },
   entrypoint: {
     programmaticAPI: './script.js',
-    cli: './scriptManager/clientInterface/commandLine.js',
+    cli: './clientInterface/commandLine.js',
   },
   transpilation: {
     babelConfigKey: 'serverRuntime.BabelConfig.js',

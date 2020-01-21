@@ -7,7 +7,8 @@
 		"scriptManagerInContainer": "./entrypoint/cliRunInContainer/index.js"
 	},
 	"scripts": {
-		"buildAndRelease": "yarn run scriptManager shouldCompileScript=true JSProject/buildAndRelease \".moduleProject({})\""
+		"build": "yarn run scriptManager shouldCompileScript=true @dependency/deploymentScript \".buildSourceCode.moduleProject({}, {compile:[/**'./test'*/]})\"",
+		"buildAndRelease": "yarn run scriptManager shouldCompileScript=true @dependency/deploymentScript \".buildAndRelease.moduleProject({})\"",
 	},
 	"dependencies": {
 		"@dependency/JSModuleTypeCheck": "https://github.com/AppScriptIO/JSModuleTypeCheck#semver:^1.x.x",
