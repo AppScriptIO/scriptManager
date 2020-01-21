@@ -1,57 +1,58 @@
-import filesystem from 'fs'
-import path from 'path'
-import { execute, lookup } from '@dependency/scriptExecution'
-import { Project } from './Project.class.js'
-import { Compiler } from '@dependency/javascriptTranspilation'
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.scriptManager = scriptManager;
+
+var _scriptExecution = require("@dependency/scriptExecution");
+var _ProjectClass = require("./Project.class.js");
+var _javascriptTranspilation = require("@dependency/javascriptTranspilation");
 
 process.on('SIGINT', () => {
-  console.log('Caught interrupt signal - scriptManager container level')
-  process.exit(0)
-})
+  console.log('Caught interrupt signal - scriptManager container level');
+  process.exit(0);
+});
 
-export async function scriptManager({
-  targetProjectConfigPath, // configuration object of the target project.
-  scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
-  jsCodeToEvaluate, // js to evaluate on the required script => 'require(<scriptPath>)<evaluate js>'
-  shouldCompileScript = false, // compile using the target projects's configuration files.
-}) {
-  console.assert(scriptKeyToInvoke, '\x1b[41m%s\x1b[0m', '❌ `scriptKeyToInvoke` parameter must be set.')
+async function scriptManager({
+  targetProjectConfigPath,
+  scriptKeyToInvoke,
+  jsCodeToEvaluate,
+  shouldCompileScript = false })
+{
+  console.assert(scriptKeyToInvoke, '\x1b[41m%s\x1b[0m', '❌ `scriptKeyToInvoke` parameter must be set.');
 
-  let project = new Project({ configurationPath: targetProjectConfigPath })
+  let project = new _ProjectClass.Project({ configurationPath: targetProjectConfigPath });
 
-  // load entrypoint configuration and check for 'entrypoint' key (entrypoint key holds object with entrypoint information like file path mapping)
-  let scriptConfigArray = project.configuration['script']
-  console.assert(scriptConfigArray, '\x1b[41m%s\x1b[0m', `❌ config['script'] option in targetProject configuration must exist.`)
 
-  let scriptConfiguration = await lookup({
+  let scriptConfigArray = project.configuration['script'];
+  console.assert(scriptConfigArray, '\x1b[41m%s\x1b[0m', `❌ config['script'] option in targetProject configuration must exist.`);
+
+  let scriptConfiguration = await (0, _scriptExecution.lookup)({
     script: scriptConfigArray,
     projectRootPath: project.configuration.rootPath,
-    scriptKeyToInvoke,
-  }).catch(error => {
-    throw error
-  })
+    scriptKeyToInvoke }).
+  catch(error => {
+    throw error;
+  });
 
   if (shouldCompileScript) {
-    let compiler = new Compiler({
-      babelTransformConfig: project.configuration.configuration.transpilation.babelConfig /** Search for configuration files from target project */,
-    })
-    compiler.requireHook({ restrictToTargetProject: false /* Transpile files of the target project */ })
-    // process.on('exit', () => {
-    //   console.log(compiler.loadedFiles.map(value => value.filename))
-    //   console.log(compiler.babelRegisterConfig.ignore)
-    // })
+    let compiler = new _javascriptTranspilation.Compiler({
+      babelTransformConfig: project.configuration.configuration.transpilation.babelConfig });
+
+    compiler.requireHook({ restrictToTargetProject: false });
+
+
+
+
   }
 
-  await execute({
-    // Assuming script is synchronous
+  await (0, _scriptExecution.execute)({
+
     scriptConfig: scriptConfiguration,
     jsCodeToEvaluate,
     parameter: {
       api: {
-        project: project, // passed to the executed target script.
-      }, // pass project api
-    },
-  }).catch(error => {
-    console.error(error)
-  })
+        project: project } } }).
+
+
+  catch(error => {
+    console.error(error);
+  });
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NvdXJjZS9zY3JpcHQuanMiXSwibmFtZXMiOlsicHJvY2VzcyIsIm9uIiwiY29uc29sZSIsImxvZyIsImV4aXQiLCJzY3JpcHRNYW5hZ2VyIiwidGFyZ2V0UHJvamVjdENvbmZpZ1BhdGgiLCJzY3JpcHRLZXlUb0ludm9rZSIsImpzQ29kZVRvRXZhbHVhdGUiLCJzaG91bGRDb21waWxlU2NyaXB0IiwiYXNzZXJ0IiwicHJvamVjdCIsIlByb2plY3QiLCJjb25maWd1cmF0aW9uUGF0aCIsInNjcmlwdENvbmZpZ0FycmF5IiwiY29uZmlndXJhdGlvbiIsInNjcmlwdENvbmZpZ3VyYXRpb24iLCJzY3JpcHQiLCJwcm9qZWN0Um9vdFBhdGgiLCJyb290UGF0aCIsImNhdGNoIiwiZXJyb3IiLCJjb21waWxlciIsIkNvbXBpbGVyIiwiYmFiZWxUcmFuc2Zvcm1Db25maWciLCJ0cmFuc3BpbGF0aW9uIiwiYmFiZWxDb25maWciLCJyZXF1aXJlSG9vayIsInJlc3RyaWN0VG9UYXJnZXRQcm9qZWN0Iiwic2NyaXB0Q29uZmlnIiwicGFyYW1ldGVyIiwiYXBpIl0sIm1hcHBpbmdzIjoiOztBQUVBO0FBQ0E7QUFDQTs7QUFFQUEsT0FBTyxDQUFDQyxFQUFSLENBQVcsUUFBWCxFQUFxQixNQUFNO0FBQ3pCQyxFQUFBQSxPQUFPLENBQUNDLEdBQVIsQ0FBWSx5REFBWjtBQUNBSCxFQUFBQSxPQUFPLENBQUNJLElBQVIsQ0FBYSxDQUFiO0FBQ0QsQ0FIRDs7QUFLTyxlQUFlQyxhQUFmLENBQTZCO0FBQ2xDQyxFQUFBQSx1QkFEa0M7QUFFbENDLEVBQUFBLGlCQUZrQztBQUdsQ0MsRUFBQUEsZ0JBSGtDO0FBSWxDQyxFQUFBQSxtQkFBbUIsR0FBRyxLQUpZLEVBQTdCO0FBS0o7QUFDRFAsRUFBQUEsT0FBTyxDQUFDUSxNQUFSLENBQWVILGlCQUFmLEVBQWtDLG1CQUFsQyxFQUF1RCw4Q0FBdkQ7O0FBRUEsTUFBSUksT0FBTyxHQUFHLElBQUlDLHFCQUFKLENBQVksRUFBRUMsaUJBQWlCLEVBQUVQLHVCQUFyQixFQUFaLENBQWQ7OztBQUdBLE1BQUlRLGlCQUFpQixHQUFHSCxPQUFPLENBQUNJLGFBQVIsQ0FBc0IsUUFBdEIsQ0FBeEI7QUFDQWIsRUFBQUEsT0FBTyxDQUFDUSxNQUFSLENBQWVJLGlCQUFmLEVBQWtDLG1CQUFsQyxFQUF3RCxzRUFBeEQ7O0FBRUEsTUFBSUUsbUJBQW1CLEdBQUcsTUFBTSw2QkFBTztBQUNyQ0MsSUFBQUEsTUFBTSxFQUFFSCxpQkFENkI7QUFFckNJLElBQUFBLGVBQWUsRUFBRVAsT0FBTyxDQUFDSSxhQUFSLENBQXNCSSxRQUZGO0FBR3JDWixJQUFBQSxpQkFIcUMsRUFBUDtBQUk3QmEsRUFBQUEsS0FKNkIsQ0FJdkJDLEtBQUssSUFBSTtBQUNoQixVQUFNQSxLQUFOO0FBQ0QsR0FOK0IsQ0FBaEM7O0FBUUEsTUFBSVosbUJBQUosRUFBeUI7QUFDdkIsUUFBSWEsUUFBUSxHQUFHLElBQUlDLGlDQUFKLENBQWE7QUFDMUJDLE1BQUFBLG9CQUFvQixFQUFFYixPQUFPLENBQUNJLGFBQVIsQ0FBc0JBLGFBQXRCLENBQW9DVSxhQUFwQyxDQUFrREMsV0FEOUMsRUFBYixDQUFmOztBQUdBSixJQUFBQSxRQUFRLENBQUNLLFdBQVQsQ0FBcUIsRUFBRUMsdUJBQXVCLEVBQUUsS0FBM0IsRUFBckI7Ozs7O0FBS0Q7O0FBRUQsUUFBTSw4QkFBUTs7QUFFWkMsSUFBQUEsWUFBWSxFQUFFYixtQkFGRjtBQUdaUixJQUFBQSxnQkFIWTtBQUlac0IsSUFBQUEsU0FBUyxFQUFFO0FBQ1RDLE1BQUFBLEdBQUcsRUFBRTtBQUNIcEIsUUFBQUEsT0FBTyxFQUFFQSxPQUROLEVBREksRUFKQyxFQUFSOzs7QUFTSFMsRUFBQUEsS0FURyxDQVNHQyxLQUFLLElBQUk7QUFDaEJuQixJQUFBQSxPQUFPLENBQUNtQixLQUFSLENBQWNBLEtBQWQ7QUFDRCxHQVhLLENBQU47QUFZRCIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBmaWxlc3lzdGVtIGZyb20gJ2ZzJ1xyXG5pbXBvcnQgcGF0aCBmcm9tICdwYXRoJ1xyXG5pbXBvcnQgeyBleGVjdXRlLCBsb29rdXAgfSBmcm9tICdAZGVwZW5kZW5jeS9zY3JpcHRFeGVjdXRpb24nXHJcbmltcG9ydCB7IFByb2plY3QgfSBmcm9tICcuL1Byb2plY3QuY2xhc3MuanMnXHJcbmltcG9ydCB7IENvbXBpbGVyIH0gZnJvbSAnQGRlcGVuZGVuY3kvamF2YXNjcmlwdFRyYW5zcGlsYXRpb24nXHJcblxyXG5wcm9jZXNzLm9uKCdTSUdJTlQnLCAoKSA9PiB7XHJcbiAgY29uc29sZS5sb2coJ0NhdWdodCBpbnRlcnJ1cHQgc2lnbmFsIC0gc2NyaXB0TWFuYWdlciBjb250YWluZXIgbGV2ZWwnKVxyXG4gIHByb2Nlc3MuZXhpdCgwKVxyXG59KVxyXG5cclxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIHNjcmlwdE1hbmFnZXIoe1xyXG4gIHRhcmdldFByb2plY3RDb25maWdQYXRoLCAvLyBjb25maWd1cmF0aW9uIG9iamVjdCBvZiB0aGUgdGFyZ2V0IHByb2plY3QuXHJcbiAgc2NyaXB0S2V5VG9JbnZva2UsIC8vIHRoZSBrZXkgbmFtZSBmb3IgdGhlIHNjcmlwdCB0aGF0IHNob3VsZCBiZSBleGVjdXRlZCAoY29tcGFyZWQgd2l0aCB0aGUga2V5IGluIHRoZSBjb25maWd1cmF0aW9uIGZpbGUuKVxyXG4gIGpzQ29kZVRvRXZhbHVhdGUsIC8vIGpzIHRvIGV2YWx1YXRlIG9uIHRoZSByZXF1aXJlZCBzY3JpcHQgPT4gJ3JlcXVpcmUoPHNjcmlwdFBhdGg+KTxldmFsdWF0ZSBqcz4nXHJcbiAgc2hvdWxkQ29tcGlsZVNjcmlwdCA9IGZhbHNlLCAvLyBjb21waWxlIHVzaW5nIHRoZSB0YXJnZXQgcHJvamVjdHMncyBjb25maWd1cmF0aW9uIGZpbGVzLlxyXG59KSB7XHJcbiAgY29uc29sZS5hc3NlcnQoc2NyaXB0S2V5VG9JbnZva2UsICdcXHgxYls0MW0lc1xceDFiWzBtJywgJ+KdjCBgc2NyaXB0S2V5VG9JbnZva2VgIHBhcmFtZXRlciBtdXN0IGJlIHNldC4nKVxyXG5cclxuICBsZXQgcHJvamVjdCA9IG5ldyBQcm9qZWN0KHsgY29uZmlndXJhdGlvblBhdGg6IHRhcmdldFByb2plY3RDb25maWdQYXRoIH0pXHJcblxyXG4gIC8vIGxvYWQgZW50cnlwb2ludCBjb25maWd1cmF0aW9uIGFuZCBjaGVjayBmb3IgJ2VudHJ5cG9pbnQnIGtleSAoZW50cnlwb2ludCBrZXkgaG9sZHMgb2JqZWN0IHdpdGggZW50cnlwb2ludCBpbmZvcm1hdGlvbiBsaWtlIGZpbGUgcGF0aCBtYXBwaW5nKVxyXG4gIGxldCBzY3JpcHRDb25maWdBcnJheSA9IHByb2plY3QuY29uZmlndXJhdGlvblsnc2NyaXB0J11cclxuICBjb25zb2xlLmFzc2VydChzY3JpcHRDb25maWdBcnJheSwgJ1xceDFiWzQxbSVzXFx4MWJbMG0nLCBg4p2MIGNvbmZpZ1snc2NyaXB0J10gb3B0aW9uIGluIHRhcmdldFByb2plY3QgY29uZmlndXJhdGlvbiBtdXN0IGV4aXN0LmApXHJcblxyXG4gIGxldCBzY3JpcHRDb25maWd1cmF0aW9uID0gYXdhaXQgbG9va3VwKHtcclxuICAgIHNjcmlwdDogc2NyaXB0Q29uZmlnQXJyYXksXHJcbiAgICBwcm9qZWN0Um9vdFBhdGg6IHByb2plY3QuY29uZmlndXJhdGlvbi5yb290UGF0aCxcclxuICAgIHNjcmlwdEtleVRvSW52b2tlLFxyXG4gIH0pLmNhdGNoKGVycm9yID0+IHtcclxuICAgIHRocm93IGVycm9yXHJcbiAgfSlcclxuXHJcbiAgaWYgKHNob3VsZENvbXBpbGVTY3JpcHQpIHtcclxuICAgIGxldCBjb21waWxlciA9IG5ldyBDb21waWxlcih7XHJcbiAgICAgIGJhYmVsVHJhbnNmb3JtQ29uZmlnOiBwcm9qZWN0LmNvbmZpZ3VyYXRpb24uY29uZmlndXJhdGlvbi50cmFuc3BpbGF0aW9uLmJhYmVsQ29uZmlnIC8qKiBTZWFyY2ggZm9yIGNvbmZpZ3VyYXRpb24gZmlsZXMgZnJvbSB0YXJnZXQgcHJvamVjdCAqLyxcclxuICAgIH0pXHJcbiAgICBjb21waWxlci5yZXF1aXJlSG9vayh7IHJlc3RyaWN0VG9UYXJnZXRQcm9qZWN0OiBmYWxzZSAvKiBUcmFuc3BpbGUgZmlsZXMgb2YgdGhlIHRhcmdldCBwcm9qZWN0ICovIH0pXHJcbiAgICAvLyBwcm9jZXNzLm9uKCdleGl0JywgKCkgPT4ge1xyXG4gICAgLy8gICBjb25zb2xlLmxvZyhjb21waWxlci5sb2FkZWRGaWxlcy5tYXAodmFsdWUgPT4gdmFsdWUuZmlsZW5hbWUpKVxyXG4gICAgLy8gICBjb25zb2xlLmxvZyhjb21waWxlci5iYWJlbFJlZ2lzdGVyQ29uZmlnLmlnbm9yZSlcclxuICAgIC8vIH0pXHJcbiAgfVxyXG5cclxuICBhd2FpdCBleGVjdXRlKHtcclxuICAgIC8vIEFzc3VtaW5nIHNjcmlwdCBpcyBzeW5jaHJvbm91c1xyXG4gICAgc2NyaXB0Q29uZmlnOiBzY3JpcHRDb25maWd1cmF0aW9uLFxyXG4gICAganNDb2RlVG9FdmFsdWF0ZSxcclxuICAgIHBhcmFtZXRlcjoge1xyXG4gICAgICBhcGk6IHtcclxuICAgICAgICBwcm9qZWN0OiBwcm9qZWN0LCAvLyBwYXNzZWQgdG8gdGhlIGV4ZWN1dGVkIHRhcmdldCBzY3JpcHQuXHJcbiAgICAgIH0sIC8vIHBhc3MgcHJvamVjdCBhcGlcclxuICAgIH0sXHJcbiAgfSkuY2F0Y2goZXJyb3IgPT4ge1xyXG4gICAgY29uc29sZS5lcnJvcihlcnJvcilcclxuICB9KVxyXG59XHJcbiJdfQ==
