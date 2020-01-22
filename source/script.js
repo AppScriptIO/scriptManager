@@ -33,12 +33,12 @@ export async function scriptManager({
 
   if (shouldCompileScript) {
     let compiler = new Compiler({
-      babelTransformConfig: project.configuration.configuration.transpilation.babelConfig /** Search for configuration files from target project */,
+      babelConfig: project.configuration.configuration.transpilation.babelConfig /** Search for configuration files from target project */,
     })
     compiler.requireHook({ restrictToTargetProject: false /* Transpile files of the target project */ })
     // process.on('exit', () => {
     //   console.log(compiler.loadedFiles.map(value => value.filename))
-    //   console.log(compiler.babelRegisterConfig.ignore)
+    //   console.log(compiler.config.ignore)
     // })
   }
 
