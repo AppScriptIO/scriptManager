@@ -10,12 +10,9 @@
 		"buildAndRelease": "yarn run scriptManager shouldCompileScript=true @dependency/deploymentScript \".buildAndRelease.moduleProject({})\""
 	},
 	"dependencies": {
-		"@dependency/JSModuleTypeCheck": "https://github.com/AppScriptIO/JSModuleTypeCheck#semver:^1.x.x",
-		"@dependency/addModuleResolutionPath": "https://github.com/AppScriptIO/addModuleResolutionPath#semver:^1.x.x",
 		"@dependency/configurationManagement": "https://github.com/AppScriptIO/configurationManagement#semver:^1.x.x",
-		"@dependency/installNodeJSModule": "https://github.com/AppScriptIO/installNodeJSModule#semver:^1.x.x",
-		"@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x",
-		"@dependency/moduleScopePattern": "https://github.com/AppScriptIO/moduleScopePattern#semver:^1.x.x",
+		"@dependency/handleModuleSystem": "https://github.com/AppScriptIO/handleModuleSystem#semver:^2.x.x",
+		"@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^2.x.x",
 		"@dependency/parseKeyValuePairSeparatedBySymbol": "https://github.com/AppScriptIO/parseKeyValuePairSeparatedBySymbol#semver:^1.x.x",
 		"@dependency/scriptExecution": "https://github.com/AppScriptIO/scriptExecution#semver:^1.x.x",
 		"child-process-promise": "^2.2.1",
@@ -30,7 +27,7 @@
 	"devDependencies": {
 		"@dependency/deploymentScript": "https://github.com/AppScriptIO/deploymentScript#semver:^2.x.x",
 		"@dependency/javascriptStaticAnalysis": "https://github.com/AppScriptIO/javascriptStaticAnalysis#semver:^1.x.x",
-		"@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^1.x.x",
+		"@dependency/javascriptTranspilation": "https://github.com/AppScriptIO/javascriptTranspilation#semver:^2.x.x",
 		"@dependency/scriptManager": "https://github.com/AppScriptIO/scriptManager#semver:^1.x.x",
 		"typescript": "^3.3.3333"
 	}
