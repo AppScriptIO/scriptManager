@@ -1,8 +1,8 @@
 import filesystem from 'fs'
 import path from 'path'
-import { execute, lookup } from '@dependency/scriptExecution'
+import { execute, lookup } from '@deployment/scriptExecution'
 import { Project } from './Project.class.js'
-import { Compiler } from '@dependency/javascriptTranspilation'
+import { Compiler } from '@deployment/javascriptTranspilation'
 
 process.on('SIGINT', () => {
   console.log('Caught interrupt signal - scriptManager container level')

@@ -1,4 +1,4 @@
-import { Configuration } from '@dependency/configurationManagement'
+import { Configuration } from '@deployment/configurationManagement'
 
 //TODO: move this function to Configuration module.
 export class Project {
