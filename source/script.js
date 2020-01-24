@@ -4,11 +4,6 @@ import { execute, lookup } from '@deployment/scriptExecution'
 import { Project } from './Project.class.js'
 import { Compiler } from '@deployment/javascriptTranspilation'
 
-process.on('SIGINT', () => {
-  console.log('Caught interrupt signal - scriptManager container level')
-  process.exit(0)
-})
-
 export async function scriptManager({
   targetProjectConfigPath, // configuration object of the target project.
   scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
