@@ -106,6 +106,7 @@ async function cliInterface({
         filename: path.resolve('../') /* add file to Node's event loop stack trace */,
       })
 
+      // TODO: Fix exit logging when ctrl+c is receiveed. (Check TODO list)
       vmScript.runInContext(contextEnvironment, { breakOnSigint: true /* break when Ctrl+C is received. */ })
     } catch (error) {
       console.log(`❌ Running 'vm runInContext' code failed during execution.`)

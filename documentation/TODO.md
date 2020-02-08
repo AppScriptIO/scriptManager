@@ -1,3 +1,5 @@
+- Fix issue: Do not print when SIGINT closes the executed script, only when errors are thrown.
+
 - [consider this change]: rename `jsCodeToEvaluate` to a term closer to the meaning of instantiating a js exported module. Research for the ways a module could be instantiated, i.e. as an object, or as a function executed directly.
 
 - Allow configurations to be exposed by the `script` repository or module: 
