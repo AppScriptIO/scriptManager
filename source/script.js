@@ -28,7 +28,7 @@ export async function scriptManager({
 
   if (shouldCompileScript) {
     let compiler = new Compiler({
-      babelConfig: project.configuration.getTranspilation() /** Search for configuration files from target project */,
+      babelConfig: project.configuration.getTranspilation().babelConfig /** Search for configuration files from target project */,
     })
     compiler.requireHook({ restrictToTargetProject: false /* Transpile files of the target project */ })
     // process.on('exit', () => {
