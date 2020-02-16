@@ -1,8 +1,9 @@
-const functionalityConfig = {
-  // the configuration affecting the behavior of source code module of this project.
-  targetApp: {
-    configurationBasePath: ['./configuration'],
-  },
-}
+"use strict";const functionalityConfig = {
 
-module.exports = functionalityConfig
+  targetApp: {
+    configurationBasePath: ['./configuration'] } };
+
+
+
+module.exports = functionalityConfig;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL3NvdXJjZS9mdW5jdGlvbmFsaXR5LmNvbmZpZy5qcyJdLCJuYW1lcyI6WyJmdW5jdGlvbmFsaXR5Q29uZmlnIiwidGFyZ2V0QXBwIiwiY29uZmlndXJhdGlvbkJhc2VQYXRoIiwibW9kdWxlIiwiZXhwb3J0cyJdLCJtYXBwaW5ncyI6ImFBQUEsTUFBTUEsbUJBQW1CLEdBQUc7O0FBRTFCQyxFQUFBQSxTQUFTLEVBQUU7QUFDVEMsSUFBQUEscUJBQXFCLEVBQUUsQ0FBQyxpQkFBRCxDQURkLEVBRmUsRUFBNUI7Ozs7QUFPQUMsTUFBTSxDQUFDQyxPQUFQLEdBQWlCSixtQkFBakIiLCJzb3VyY2VzQ29udGVudCI6WyJjb25zdCBmdW5jdGlvbmFsaXR5Q29uZmlnID0ge1xuICAvLyB0aGUgY29uZmlndXJhdGlvbiBhZmZlY3RpbmcgdGhlIGJlaGF2aW9yIG9mIHNvdXJjZSBjb2RlIG1vZHVsZSBvZiB0aGlzIHByb2plY3QuXG4gIHRhcmdldEFwcDoge1xuICAgIGNvbmZpZ3VyYXRpb25CYXNlUGF0aDogWycuL2NvbmZpZ3VyYXRpb24nXSxcbiAgfSxcbn1cblxubW9kdWxlLmV4cG9ydHMgPSBmdW5jdGlvbmFsaXR5Q29uZmlnXG4iXX0=

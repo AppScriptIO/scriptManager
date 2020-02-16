@@ -1,9 +1,10 @@
-// check if command argument (string) is a Javascript code that should be evaluated on an imported module. This allows for exposing modules to commandline with javascript code, i.e. execute js in commandline.
-export function isJSCodeToEvaluate({ 
-  string, 
-  // e.g. '(' for executing function, '.' maybe used through '.apply' to execute 'scriptManager' function.
-  symbolsForActingOnExports = [new RegExp(`^\\(`), new RegExp('^\\.(?!\\/).*'), new RegExp(`^\\[`) ] // exported modules could be function or objects, the operator to evaluate them starts with one of these symbols.
-}) {
-  if (!string) return false
-  return symbolsForActingOnExports.some(symbol => symbol.test(string))
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.isJSCodeToEvaluate = isJSCodeToEvaluate;
+function isJSCodeToEvaluate({
+  string,
+
+  symbolsForActingOnExports = [new RegExp(`^\\(`), new RegExp('^\\.(?!\\/).*'), new RegExp(`^\\[`)] })
+{
+  if (!string) return false;
+  return symbolsForActingOnExports.some(symbol => symbol.test(string));
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS91dGlsaXR5L2lzSlNDb2RlVG9FdmFsdWF0ZS5qcyJdLCJuYW1lcyI6WyJpc0pTQ29kZVRvRXZhbHVhdGUiLCJzdHJpbmciLCJzeW1ib2xzRm9yQWN0aW5nT25FeHBvcnRzIiwiUmVnRXhwIiwic29tZSIsInN5bWJvbCIsInRlc3QiXSwibWFwcGluZ3MiOiI7QUFDTyxTQUFTQSxrQkFBVCxDQUE0QjtBQUNqQ0MsRUFBQUEsTUFEaUM7O0FBR2pDQyxFQUFBQSx5QkFBeUIsR0FBRyxDQUFDLElBQUlDLE1BQUosQ0FBWSxNQUFaLENBQUQsRUFBcUIsSUFBSUEsTUFBSixDQUFXLGVBQVgsQ0FBckIsRUFBa0QsSUFBSUEsTUFBSixDQUFZLE1BQVosQ0FBbEQsQ0FISyxFQUE1QjtBQUlKO0FBQ0QsTUFBSSxDQUFDRixNQUFMLEVBQWEsT0FBTyxLQUFQO0FBQ2IsU0FBT0MseUJBQXlCLENBQUNFLElBQTFCLENBQStCQyxNQUFNLElBQUlBLE1BQU0sQ0FBQ0MsSUFBUCxDQUFZTCxNQUFaLENBQXpDLENBQVA7QUFDRCIsInNvdXJjZXNDb250ZW50IjpbIi8vIGNoZWNrIGlmIGNvbW1hbmQgYXJndW1lbnQgKHN0cmluZykgaXMgYSBKYXZhc2NyaXB0IGNvZGUgdGhhdCBzaG91bGQgYmUgZXZhbHVhdGVkIG9uIGFuIGltcG9ydGVkIG1vZHVsZS4gVGhpcyBhbGxvd3MgZm9yIGV4cG9zaW5nIG1vZHVsZXMgdG8gY29tbWFuZGxpbmUgd2l0aCBqYXZhc2NyaXB0IGNvZGUsIGkuZS4gZXhlY3V0ZSBqcyBpbiBjb21tYW5kbGluZS5cbmV4cG9ydCBmdW5jdGlvbiBpc0pTQ29kZVRvRXZhbHVhdGUoeyBcbiAgc3RyaW5nLCBcbiAgLy8gZS5nLiAnKCcgZm9yIGV4ZWN1dGluZyBmdW5jdGlvbiwgJy4nIG1heWJlIHVzZWQgdGhyb3VnaCAnLmFwcGx5JyB0byBleGVjdXRlICdzY3JpcHRNYW5hZ2VyJyBmdW5jdGlvbi5cbiAgc3ltYm9sc0ZvckFjdGluZ09uRXhwb3J0cyA9IFtuZXcgUmVnRXhwKGBeXFxcXChgKSwgbmV3IFJlZ0V4cCgnXlxcXFwuKD8hXFxcXC8pLionKSwgbmV3IFJlZ0V4cChgXlxcXFxbYCkgXSAvLyBleHBvcnRlZCBtb2R1bGVzIGNvdWxkIGJlIGZ1bmN0aW9uIG9yIG9iamVjdHMsIHRoZSBvcGVyYXRvciB0byBldmFsdWF0ZSB0aGVtIHN0YXJ0cyB3aXRoIG9uZSBvZiB0aGVzZSBzeW1ib2xzLlxufSkge1xuICBpZiAoIXN0cmluZykgcmV0dXJuIGZhbHNlXG4gIHJldHVybiBzeW1ib2xzRm9yQWN0aW5nT25FeHBvcnRzLnNvbWUoc3ltYm9sID0+IHN5bWJvbC50ZXN0KHN0cmluZykpXG59XG4iXX0=

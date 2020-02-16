@@ -1,131 +1,132 @@
-let style = { title: '\x1b[33m\x1b[1m\x1b[7m\x1b[36m', message: '\x1b[96m', italic: '\x1b[2m\x1b[3m', default: '\x1b[0m' }
-console.log(`\x1b[2m\x1b[3m%s\x1b[0m`, `• Environment variables:`)
-console.log(`\t${style.italic}%s${style.default} ${style.message}%s${style.default}`, `Command:`, `${process.argv.join(' ')}`)
-/* shell script environmnet arguments - Log environment variables & shell command arguments */
-console.log(`\t${style.italic}%s${style.default} ${style.message}%s${style.default}`, `env:`, `entrypointConfigurationKey = ${process.env.entrypointConfigurationKey}`)
-console.log(`\t${style.italic}%s${style.default} ${style.message}%s${style.default}`, `env:`, `entrypointConfigurationPath = ${process.env.entrypointConfigurationPath}`)
-console.log(`\t${style.italic}%s${style.default} ${style.message}%s${style.default}`, `env:`, `targetAppBasePath = ${process.env.targetAppBasePath}`)
+"use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-import path from 'path'
-import assert from 'assert'
-import filesystem from 'fs'
-import vm from 'vm'
-import ownConfiguration from '../functionality.config.js'
-import { parseKeyValuePairSeparatedBySymbolFromArray, combineKeyValueObjectIntoString } from '@dependency/handleJSNativeDataStructure'
-import { configurationFileLookup } from '@deployment/configurationManagement'
-import { scriptManager } from '../script.js'
-import { loadStdin } from '../utility/loadStdin.js'
-import { isJSCodeToEvaluate } from '../utility/isJSCodeToEvaluate.js'
-import { splitArrayToTwoByDelimiter, divideArrayByFilter } from '../utility/splitArray.js'
 
-cliInterface().catch(error => console.error(error))
 
-/**
- * Could run in two modes:
- *  1. Evaluate code interface: Allows for calling this module `scriptManager` using javasript code from the commandline.
- *     In this case there are no parsed command arguments, only the first argument that contains JS code with all necessary parameters.
- *     USAGE:
- *       `yarn run scriptManager "({ scriptKeyToInvoke: 'sleep' })"`
- *       `yarn run scriptManager "({ scriptKeyToInvoke: 'sleep', jsCodeToEvaluate: '.setInterval()' })"`
- *       `yarn run scriptManager ".apply()"` - take note that also '.' is considered evaluate code.
- *  2. parsed arguments interface: This implementation, in contrast to the other code evaluation interface, requires mapping the needed commandline parsed arguments to the method parameters.
- *      Note: this contains evaluation code that is used by subsequent modules like "scriptExecution"
- *     USAGE:
- *      script invokation from shell using: npx || yarn run || <pathToScript e.g. './node_modules/.bin/scriptManager'>   (`yarn run` is prefered over `npx` because it correctly catches errors, i.e. its implementation is more complete.)
- *      $ `yarn run scriptManager targetProjectConfigPath=<> scriptKeyToInvoke=<filename> jsCodeToEvaluate=<js code> - <arguments passed to target script>`
- *      $ `yarn run scriptManager test - testType=unitTest debug`
- *      where `-` means the end of own module args and beginning of target script args (a slightlt different meaning than the convention in other shell scripts https://serverfault.com/questions/114897/what-does-double-dash-mean-in-this-shell-command).
- *      shorthand $ `yarn run scriptManager <scriptToInvoke> <jsCodeToEvaluate> - <arguments to target script>` e.g. `yarn run scriptManager sleep '.setInterval()'`
- *       `yarn scriptManager test ".runTest({ testPath: '${PWD}/test', targetProject: api.project })"` // where `api` is exposed by the scriptManager to the evaluated script.
- *       scriptConfig adapterFunction + `yarn scriptManager test ".runTest({ testPath: '${PWD}/test' })"` // where an adapter is provided in scriptConfig to set the 'targetProject' from the api of scriptManager.
- *
- *
- * [note] distinguish between the ownConfiguration and the target application configuration.
- */
+
+
+
+
+var _path = _interopRequireDefault(require("path"));
+
+
+var _vm = _interopRequireDefault(require("vm"));
+var _functionalityConfig = _interopRequireDefault(require("../functionality.config.js"));
+var _handleJSNativeDataStructure = require("@dependency/handleJSNativeDataStructure");
+var _configurationManagement = require("@deployment/configurationManagement");
+var _script = require("../script.js");
+var _loadStdin = require("../utility/loadStdin.js");
+var _isJSCodeToEvaluate = require("../utility/isJSCodeToEvaluate.js");
+var _splitArray = require("../utility/splitArray.js");let style = { title: '\x1b[33m\x1b[1m\x1b[7m\x1b[36m', message: '\x1b[96m', italic: '\x1b[2m\x1b[3m', default: '\x1b[0m' };console.log(`\x1b[2m\x1b[3m%s\x1b[0m`, `• Environment variables:`);console.log(`\t${style.italic}%s${style.default} ${style.message}%s${style.default}`, `Command:`, `${process.argv.join(' ')}`);console.log(`\t${style.italic}%s${style.default} ${style.message}%s${style.default}`, `env:`, `entrypointConfigurationKey = ${process.env.entrypointConfigurationKey}`);console.log(`\t${style.italic}%s${style.default} ${style.message}%s${style.default}`, `env:`, `entrypointConfigurationPath = ${process.env.entrypointConfigurationPath}`);console.log(`\t${style.italic}%s${style.default} ${style.message}%s${style.default}`, `env:`, `targetAppBasePath = ${process.env.targetAppBasePath}`);
+
+cliInterface().catch(error => console.error(error));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function cliInterface({
-  commandArgument = process.argv.slice(2) /* remove first two arguments `runtime`, `module path` */,
-  argumentDelimiter = '-', // delimiter symbol for differentiating own arguments from the target script arguments. using `-` instead of `--` because yarn removes the double slash (although in future version it won't, as was mentioned).
-  currentDirectory = process.env.PWD || process.cwd() /*In case run in Windows where PWD is not set.*/,
+  commandArgument = process.argv.slice(2),
+  argumentDelimiter = '-',
+  currentDirectory = process.env.PWD || process.cwd(),
   envrironmentArgument = process.env,
-  scriptKeyToInvoke, // the key name for the script that should be executed (compared with the key in the configuration file.)
-  targetProjectConfigPath, // the path to the configuration file of the target application. relative path to target project configuration from current working directory.
+  scriptKeyToInvoke,
+  targetProjectConfigPath,
   jsCodeToEvaluate,
-  shouldCompileScript,
-} = []) {
-  /** Argument initialization, validation, sanitization
-   * get arguments - API of accepted varibales from (priority list)
-   * 1. immediately passed argument in code.
-   * 2. Environment variables
-   * 3. Commandline arguments
-   */
-  let standartInputData = await loadStdin() // in case in shell pipeline - get input
-  // split commandline arguments by delimiter
-  let [ownCommandArgument, targetScriptCommandArgument] = splitArrayToTwoByDelimiter({ array: commandArgument, delimiter: argumentDelimiter })
-  let [pairArgument, nonPairArgument] = divideArrayByFilter({ array: ownCommandArgument, filterFunc: item => item.includes('=') }) // separate arguments that are key-value pair from the rest
-  let parsedCommandArgument = parseKeyValuePairSeparatedBySymbolFromArray({ array: pairArgument, separatingSymbol: '=' }) // parse `key=value` node command line arguments
-  // create command arguments for target script.
-  process.argv = [process.argv[0], process.argv[1] /* should be substituted by full target script path after lookup */, ...targetScriptCommandArgument]
+  shouldCompileScript } =
+[]) {
 
-  // target application configuration file:
+
+
+
+
+
+  let standartInputData = await (0, _loadStdin.loadStdin)();
+
+  let [ownCommandArgument, targetScriptCommandArgument] = (0, _splitArray.splitArrayToTwoByDelimiter)({ array: commandArgument, delimiter: argumentDelimiter });
+  let [pairArgument, nonPairArgument] = (0, _splitArray.divideArrayByFilter)({ array: ownCommandArgument, filterFunc: item => item.includes('=') });
+  let parsedCommandArgument = (0, _handleJSNativeDataStructure.parseKeyValuePairSeparatedBySymbolFromArray)({ array: pairArgument, separatingSymbol: '=' });
+
+  process.argv = [process.argv[0], process.argv[1], ...targetScriptCommandArgument];
+
+
   let configurationFileLookupCallback = configPath => {
-    configPath = configurationFileLookup({
+    configPath = (0, _configurationManagement.configurationFileLookup)({
       configurationPath: configPath,
       currentDirectory,
-      configurationBasePath: ownConfiguration.targetApp.configurationBasePath,
-    }).path
-    // assret entrypoint configuration objects/options exist.
-    console.assert(require.resolve(configPath), '\x1b[41m%s\x1b[0m', `❌ Configuration file doesn't exist in ${configPath}`)
-    return configPath
-  }
+      configurationBasePath: _functionalityConfig.default.targetApp.configurationBasePath }).
+    path;
 
-  // [1] accepts a single argument string to be evaluated as JS code, in addition to environment variables for execution of the programmatic api.
+    console.assert(require.resolve(configPath), '\x1b[41m%s\x1b[0m', `❌ Configuration file doesn't exist in ${configPath}`);
+    return configPath;
+  };
+
+
   async function evaluateInterface() {
-    scriptKeyToInvoke ||= envrironmentArgument.scriptKeyToInvoke
-    targetProjectConfigPath ||= standartInputData || envrironmentArgument.targetConfig
-    shouldCompileScript ||= envrironmentArgument.shouldCompileScript
-    targetProjectConfigPath = configurationFileLookupCallback(targetProjectConfigPath)
-    // string js code that will be used on the callback.
-    let codeToEvaluateForOwnModule = ownCommandArgument[0],
-      defaultEvaluateCallValueForFirstParameter = { targetProjectConfigPath, scriptKeyToInvoke, jsCodeToEvaluate, shouldCompileScript }
-    // execute api using string evaluated code.
-    let contextEnvironment = vm.createContext(
-      Object.assign(global, {
-        // wrapper function aroung 'scriptManager' in order to apply default values
-        // TODO: User symbols if possible instead of a string for the wrapping function.
-        _requiredModuleScriptManagerWrapper_: async (...args) => {
-          // similar to a curry function wrapper, setting default values
-          // process args setting default values
-          args[0] = Object.assign(defaultEvaluateCallValueForFirstParameter, args[0]) // these are is specific number of parameters that `scriptManager` function has
-          await scriptManager(...args).catch(error => console.log(error))
-        },
-      }),
-    )
-    try {
-      // where `_` available in context of vm, calls `scriptManager` module.
-      let vmScript = new vm.Script(`_requiredModuleScriptManagerWrapper_${codeToEvaluateForOwnModule}`, {
-        filename: path.resolve('../') /* add file to Node's event loop stack trace */,
-      })
+    scriptKeyToInvoke || (scriptKeyToInvoke = envrironmentArgument.scriptKeyToInvoke);
+    targetProjectConfigPath || (targetProjectConfigPath = standartInputData || envrironmentArgument.targetConfig);
+    shouldCompileScript || (shouldCompileScript = envrironmentArgument.shouldCompileScript);
+    targetProjectConfigPath = configurationFileLookupCallback(targetProjectConfigPath);
 
-      // TODO: Fix exit logging when ctrl+c is receiveed. (Check TODO list)
-      vmScript.runInContext(contextEnvironment, { breakOnSigint: true /* break when Ctrl+C is received. */ })
+    let codeToEvaluateForOwnModule = ownCommandArgument[0],
+    defaultEvaluateCallValueForFirstParameter = { targetProjectConfigPath, scriptKeyToInvoke, jsCodeToEvaluate, shouldCompileScript };
+
+    let contextEnvironment = _vm.default.createContext(
+    Object.assign(global, {
+
+
+      _requiredModuleScriptManagerWrapper_: async (...args) => {
+
+
+        args[0] = Object.assign(defaultEvaluateCallValueForFirstParameter, args[0]);
+        await (0, _script.scriptManager)(...args).catch(error => console.log(error));
+      } }));
+
+
+    try {
+
+      let vmScript = new _vm.default.Script(`_requiredModuleScriptManagerWrapper_${codeToEvaluateForOwnModule}`, {
+        filename: _path.default.resolve('../') });
+
+
+
+      vmScript.runInContext(contextEnvironment, { breakOnSigint: true });
     } catch (error) {
-      console.log(`❌ Running 'vm runInContext' code failed during execution.`)
-      throw error
+      console.log(`❌ Running 'vm runInContext' code failed during execution.`);
+      throw error;
     }
   }
 
-  // [2] accepts command arguments or environment variables as parameters for the execution of the programmatic api.
+
   async function passedArgumentInterface() {
-    scriptKeyToInvoke ||= parsedCommandArgument.scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke || nonPairArgument[0] // allow for shorthand command call.
-    jsCodeToEvaluate ||= parsedCommandArgument.jsCodeToEvaluate || envrironmentArgument.scriptKeyToInvoke || nonPairArgument[1]
-    shouldCompileScript ||= parsedCommandArgument.shouldCompileScript || envrironmentArgument.shouldCompileScript || nonPairArgument[2]
-    process.argv[1] = scriptKeyToInvoke || process.argv[1] //The path to the script should be changed after script lookup by succeeding modules.
-    // target application's configuration file parameter hierarchy
-    targetProjectConfigPath ||= parsedCommandArgument.targetConfig || standartInputData /* stdin input */ || envrironmentArgument.targetConfig
-    targetProjectConfigPath = configurationFileLookupCallback(targetProjectConfigPath)
-    await scriptManager({ targetProjectConfigPath, scriptKeyToInvoke, jsCodeToEvaluate, shouldCompileScript }).catch(error => console.error(error))
+    scriptKeyToInvoke || (scriptKeyToInvoke = parsedCommandArgument.scriptKeyToInvoke || envrironmentArgument.scriptKeyToInvoke || nonPairArgument[0]);
+    jsCodeToEvaluate || (jsCodeToEvaluate = parsedCommandArgument.jsCodeToEvaluate || envrironmentArgument.scriptKeyToInvoke || nonPairArgument[1]);
+    shouldCompileScript || (shouldCompileScript = parsedCommandArgument.shouldCompileScript || envrironmentArgument.shouldCompileScript || nonPairArgument[2]);
+    process.argv[1] = scriptKeyToInvoke || process.argv[1];
+
+    targetProjectConfigPath || (targetProjectConfigPath = parsedCommandArgument.targetConfig || standartInputData || envrironmentArgument.targetConfig);
+    targetProjectConfigPath = configurationFileLookupCallback(targetProjectConfigPath);
+    await (0, _script.scriptManager)({ targetProjectConfigPath, scriptKeyToInvoke, jsCodeToEvaluate, shouldCompileScript }).catch(error => console.error(error));
   }
 
-  // check if the first argument for is a Javascript code that should be evaluated on an imported module.
-  isJSCodeToEvaluate({ string: nonPairArgument[0] }) ? await evaluateInterface() : await passedArgumentInterface()
+
+  (0, _isJSCodeToEvaluate.isJSCodeToEvaluate)({ string: nonPairArgument[0] }) ? await evaluateInterface() : await passedArgumentInterface();
 }
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NvdXJjZS9jbGllbnRJbnRlcmZhY2UvY29tbWFuZExpbmUuanMiXSwibmFtZXMiOlsic3R5bGUiLCJ0aXRsZSIsIm1lc3NhZ2UiLCJpdGFsaWMiLCJkZWZhdWx0IiwiY29uc29sZSIsImxvZyIsInByb2Nlc3MiLCJhcmd2Iiwiam9pbiIsImVudiIsImVudHJ5cG9pbnRDb25maWd1cmF0aW9uS2V5IiwiZW50cnlwb2ludENvbmZpZ3VyYXRpb25QYXRoIiwidGFyZ2V0QXBwQmFzZVBhdGgiLCJjbGlJbnRlcmZhY2UiLCJjYXRjaCIsImVycm9yIiwiY29tbWFuZEFyZ3VtZW50Iiwic2xpY2UiLCJhcmd1bWVudERlbGltaXRlciIsImN1cnJlbnREaXJlY3RvcnkiLCJQV0QiLCJjd2QiLCJlbnZyaXJvbm1lbnRBcmd1bWVudCIsInNjcmlwdEtleVRvSW52b2tlIiwidGFyZ2V0UHJvamVjdENvbmZpZ1BhdGgiLCJqc0NvZGVUb0V2YWx1YXRlIiwic2hvdWxkQ29tcGlsZVNjcmlwdCIsInN0YW5kYXJ0SW5wdXREYXRhIiwib3duQ29tbWFuZEFyZ3VtZW50IiwidGFyZ2V0U2NyaXB0Q29tbWFuZEFyZ3VtZW50IiwiYXJyYXkiLCJkZWxpbWl0ZXIiLCJwYWlyQXJndW1lbnQiLCJub25QYWlyQXJndW1lbnQiLCJmaWx0ZXJGdW5jIiwiaXRlbSIsImluY2x1ZGVzIiwicGFyc2VkQ29tbWFuZEFyZ3VtZW50Iiwic2VwYXJhdGluZ1N5bWJvbCIsImNvbmZpZ3VyYXRpb25GaWxlTG9va3VwQ2FsbGJhY2siLCJjb25maWdQYXRoIiwiY29uZmlndXJhdGlvblBhdGgiLCJjb25maWd1cmF0aW9uQmFzZVBhdGgiLCJvd25Db25maWd1cmF0aW9uIiwidGFyZ2V0QXBwIiwicGF0aCIsImFzc2VydCIsInJlcXVpcmUiLCJyZXNvbHZlIiwiZXZhbHVhdGVJbnRlcmZhY2UiLCJ0YXJnZXRDb25maWciLCJjb2RlVG9FdmFsdWF0ZUZvck93bk1vZHVsZSIsImRlZmF1bHRFdmFsdWF0ZUNhbGxWYWx1ZUZvckZpcnN0UGFyYW1ldGVyIiwiY29udGV4dEVudmlyb25tZW50Iiwidm0iLCJjcmVhdGVDb250ZXh0IiwiT2JqZWN0IiwiYXNzaWduIiwiZ2xvYmFsIiwiX3JlcXVpcmVkTW9kdWxlU2NyaXB0TWFuYWdlcldyYXBwZXJfIiwiYXJncyIsInZtU2NyaXB0IiwiU2NyaXB0IiwiZmlsZW5hbWUiLCJydW5JbkNvbnRleHQiLCJicmVha09uU2lnaW50IiwicGFzc2VkQXJndW1lbnRJbnRlcmZhY2UiLCJzdHJpbmciXSwibWFwcGluZ3MiOiI7Ozs7Ozs7O0FBUUE7OztBQUdBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0Esc0RBbEJBLElBQUlBLEtBQUssR0FBRyxFQUFFQyxLQUFLLEVBQUUsZ0NBQVQsRUFBMkNDLE9BQU8sRUFBRSxVQUFwRCxFQUFnRUMsTUFBTSxFQUFFLGdCQUF4RSxFQUEwRkMsT0FBTyxFQUFFLFNBQW5HLEVBQVosQ0FDQUMsT0FBTyxDQUFDQyxHQUFSLENBQWEseUJBQWIsRUFBd0MsMEJBQXhDLEVBQ0FELE9BQU8sQ0FBQ0MsR0FBUixDQUFhLEtBQUlOLEtBQUssQ0FBQ0csTUFBTyxLQUFJSCxLQUFLLENBQUNJLE9BQVEsSUFBR0osS0FBSyxDQUFDRSxPQUFRLEtBQUlGLEtBQUssQ0FBQ0ksT0FBUSxFQUFuRixFQUF1RixVQUF2RixFQUFtRyxHQUFFRyxPQUFPLENBQUNDLElBQVIsQ0FBYUMsSUFBYixDQUFrQixHQUFsQixDQUF1QixFQUE1SCxFQUVBSixPQUFPLENBQUNDLEdBQVIsQ0FBYSxLQUFJTixLQUFLLENBQUNHLE1BQU8sS0FBSUgsS0FBSyxDQUFDSSxPQUFRLElBQUdKLEtBQUssQ0FBQ0UsT0FBUSxLQUFJRixLQUFLLENBQUNJLE9BQVEsRUFBbkYsRUFBdUYsTUFBdkYsRUFBK0YsZ0NBQStCRyxPQUFPLENBQUNHLEdBQVIsQ0FBWUMsMEJBQTJCLEVBQXJLLEVBQ0FOLE9BQU8sQ0FBQ0MsR0FBUixDQUFhLEtBQUlOLEtBQUssQ0FB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TWlCLHVCQUF1QixFQUE5RztBQUNEIiwic291cmNlc0NvbnRlbnQiOlsibGV0IHN0eWxlID0geyB0aXRsZTogJ1xceDFiWzMzbVxceDFiWzFtXFx4MWJbN21cXHgxYlszNm0nLCBtZXNzYWdlOiAnXFx4MWJbOTZtJywgaXRhbGljOiAnXFx4MWJbMm1cXHgxYlszbScsIGRlZmF1bHQ6ICdcXHgxYlswbScgfVxyXG5jb25zb2xlLmxvZyhgXFx4MWJbMm1cXHgxYlszbSVzXFx4MWJbMG1gLCBg4oCiIEVudmlyb25tZW50IHZhcmlhYmxlczpgKVxyXG5jb25zb2xlLmxvZyhgXFx0JHtzdHlsZS5pdGFsaWN9JXMke3N0eWxlLmRlZmF1bHR9ICR7c3R5bGUubWVzc2FnZX0lcyR7c3R5bGUuZGVmYXVsdH1gLCBgQ29tbWFuZDpgLCBgJHtwcm9jZXNzLmFyZ3Yuam9pbignICcpfWApXHJcbi8qIHNoZWxsIHNjcmlwdCBlbnZpcm9ubW5ldCBhcmd1bWVudHMgLSBMb2cgZW52aXJvbm1lbnQgdmFyaWFibGVzICYgc2hlbGwgY29tbWFuZCBhcmd1bWVudHMgKi9cclxuY29uc29sZS5sb2coYFxcdCR7c3R5bGUuaXRhbGljfSVzJHtzdHlsZS5kZWZhdWx0fSAke3N0eWxlLm1lc3NhZ2V9JXMke3N0eWxlLmRlZmF1bHR9YCwgYGVudjpgLCBgZW50cnlwb2ludENvbmZpZ3VyYXRpb25LZXkgPSAke3Byb2Nlc3MuZW52LmVudHJ5cG9pbnRDb25maWd1cmF0aW9uS2V5fWApXHJcbmNvbnNvbGUubG9nKGBcXHQke3N0eWxlLml0YWxpY30lcyR7c3R5bGUuZGVmYXVsdH0gJHtzdHlsZS5tZXNzYWdlfSVzJHtzdHlsZS5kZWZhdWx0fWAsIGBlbnY6YCwgYGVudHJ5cG9pbnRDb25maWd1cmF0aW9uUGF0aCA9ICR7cHJvY2Vzcy5lbnYuZW50cnlwb2ludENvbmZpZ3VyYXRpb25QYXRofWApXHJcbmNvbnNvbGUubG9nKGBcXHQke3N0eWxlLml0YWxpY30lcyR7c3R5bGUuZGVmYXVsdH0gJHtzdHlsZS5tZXNzYWdlfSVzJHtzdHlsZS5kZWZhdWx0fWAsIGBlbnY6YCwgYHRhcmdldEFwcEJhc2VQYXRoID0gJHtwcm9jZXNzLmVudi50YXJnZXRBcHBCYXNlUGF0aH1gKVxyXG5cclxuaW1wb3J0IHBhdGggZnJvbSAncGF0aCdcclxuaW1wb3J0IGFzc2VydCBmcm9tICdhc3NlcnQnXHJcbmltcG9ydCBmaWxlc3lzdGVtIGZyb20gJ2ZzJ1xyXG5pbXBvcnQgdm0gZnJvbSAndm0nXHJcbmltcG9ydCBvd25Db25maWd1cmF0aW9uIGZyb20gJy4uL2Z1bmN0aW9uYWxpdHkuY29uZmlnLmpzJ1xyXG5pbXBvcnQgeyBwYXJzZUtleVZhbHVlUGFpclNlcGFyYXRlZEJ5U3ltYm9sRnJvbUFycmF5LCBjb21iaW5lS2V5VmFsdWVPYmplY3RJbnRvU3RyaW5nIH0gZnJvbSAnQGRlcGVuZGVuY3kvaGFuZGxlSlNOYXRpdmVEYXRhU3RydWN0dXJlJ1xyXG5pbXBvcnQgeyBjb25maWd1cmF0aW9uRmlsZUxvb2t1cCB9IGZyb20gJ0BkZXBsb3ltZW50L2NvbmZpZ3VyYXRpb25NYW5hZ2VtZW50J1xyXG5pbXBvcnQgeyBzY3JpcHRNYW5hZ2VyIH0gZnJvbSAnLi4vc2NyaXB0LmpzJ1xyXG5pbXBvcnQgeyBsb2FkU3RkaW4gfSBmcm9tICcuLi91dGlsaXR5L2xvYWRTdGRpbi5qcydcclxuaW1wb3J0IHsgaXNKU0NvZGVUb0V2YWx1YXRlIH0gZnJvbSAnLi4vdXRpbGl0eS9pc0pTQ29kZVRvRXZhbHVhdGUuanMnXHJcbmltcG9ydCB7IHNwbGl0QXJyYXlUb1R3b0J5RGVsaW1pdGVyLCBkaXZpZGVBcnJheUJ5RmlsdGVyIH0gZnJvbSAnLi4vdXRpbGl0eS9zcGxpdEFycmF5LmpzJ1xyXG5cclxuY2xpSW50ZXJmYWNlKCkuY2F0Y2goZXJyb3IgPT4gY29uc29sZS5lcnJvcihlcnJvcikpXHJcblxyXG4vKipcclxuICogQ291bGQgcnVuIGluIHR3byBtb2RlczpcclxuICogIDEuIEV2YWx1YXRlIGNvZGUgaW50ZXJmYWNlOiBBbGxvd3MgZm9yIGNhbGxpbmcgdGhpcyBtb2R1bGUgYHNjcmlwdE1hbmFnZXJgIHVzaW5nIGphdmFzcmlwdCBjb2RlIGZyb20gdGhlIGNvbW1hbmRsaW5lLlxyXG4gKiAgICAgSW4gdGhpcyBjYXNlIHRoZXJlIGFyZSBubyBwYXJzZWQgY29tbWFuZCBhcmd1bWVudHMsIG9ubHkgdGhlIGZpcnN0IGFyZ3VtZW50IHRoYXQgY29udGFpbnMgSlMgY29kZSB3aXRoIGFsbCBuZWNlc3NhcnkgcGFyYW1ldGVycy5cclxuICogICAgIFVTQUdFOlxyXG4gKiAgICAgICBgeWFybiBydW4gc2NyaXB0TWFuYWdlciBcIih7IHNjcmlwdEtleVRvSW52b2tlOiAnc2xlZXAnIH0pXCJgXHJcbiAqICAgICAgIGB5YXJuIHJ1biBzY3JpcHRNYW5hZ2VyIFwiKHsgc2NyaXB0S2V5VG9JbnZva2U6ICdzbGVlcCcsIGpzQ29kZVRvRXZhbHVhdGU6ICcuc2V0SW50ZXJ2YWwoKScgfSlcImBcclxuICogICAgICAgYHlhcm4gcnVuIHNjcmlwdE1hbmFnZXIgXCIuYXBwbHkoKVwiYCAtIHRha2Ugbm90ZSB0aGF0IGFsc28gJy4nIGlzIGNvbnNpZGVyZWQgZXZhbHVhdGUgY29kZS5cclxuICogIDIuIHBhcnNlZCBhcmd1bWVudHMgaW50ZXJmYWNlOiBUaGlzIGltcGxlbWVudGF0aW9uLCBpbiBjb250cmFzdCB0byB0aGUgb3RoZXIgY29kZSBldmFsdWF0aW9uIGludGVyZmFjZSwgcmVxdWlyZXMgbWFwcGluZyB0aGUgbmVlZGVkIGNvbW1hbmRsaW5lIHBhcnNlZCBhcmd1bWVudHMgdG8gdGhlIG1ldGhvZCBwYXJhbWV0ZXJzLlxyXG4gKiAgICAgIE5vdGU6IHRoaXMgY29udGFpbnMgZXZhbHVhdGlvbiBjb2RlIHRoYXQgaXMgdXNlZCBieSBzdWJzZXF1ZW50IG1vZHVsZXMgbGlrZSBcInNjcmlwdEV4ZWN1dGlvblwiXHJcbiAqICAgICBVU0FHRTpcclxuICogICAgICBzY3JpcHQgaW52b2thdGlvbiBmcm9tIHNoZWxsIHVzaW5nOiBucHggfHwgeWFybiBydW4gfHwgPHBhdGhUb1NjcmlwdCBlLmcuICcuL25vZGVfbW9kdWxlcy8uYmluL3NjcmlwdE1hbmFnZXInPiAgIChgeWFybiBydW5gIGlzIHByZWZlcmVkIG92ZXIgYG5weGAgYmVjYXVzZSBpdCBjb3JyZWN0bHkgY2F0Y2hlcyBlcnJvcnMsIGkuZS4gaXRzIGltcGxlbWVudGF0aW9uIGlzIG1vcmUgY29tcGxldGUuKVxyXG4gKiAgICAgICQgYHlhcm4gcnVuIHNjcmlwdE1hbmFnZXIgdGFyZ2V0UHJvamVjdENvbmZpZ1BhdGg9PD4gc2NyaXB0S2V5VG9JbnZva2U9PGZpbGVuYW1lPiBqc0NvZGVUb0V2YWx1YXRlPTxqcyBjb2RlPiAtIDxhcmd1bWVudHMgcGFzc2VkIHRvIHRhcmdldCBzY3JpcHQ+YFxyXG4gKiAgICAgICQgYHlhcm4gcnVuIHNjcmlwdE1hbmFnZXIgdGVzdCAtIHRlc3RUeXBlPXVuaXRUZXN0IGRlYnVnYFxyXG4gKiAgICAgIHdoZXJlIGAtYCBtZWFucyB0aGUgZW5kIG9mIG93biBtb2R1bGUgYXJncyBhbmQgYmVnaW5uaW5nIG9mIHRhcmdldCBzY3JpcHQgYXJncyAoYSBzbGlnaHRsdCBkaWZmZXJlbnQgbWVhbmluZyB0aGFuIHRoZSBjb252ZW50aW9uIGluIG90aGVyIHNoZWxsIHNjcmlwdHMgaHR0cHM6Ly9zZXJ2ZXJmYXVsdC5jb20vcXVlc3Rpb25zLzExNDg5Ny93aGF0LWRvZXMtZG91YmxlLWRhc2gtbWVhbi1pbi10aGlzLXNoZWxsLWNvbW1hbmQpLlxyXG4gKiAgICAgIHNob3J0aGFuZCAkIGB5YXJuIHJ1biBzY3JpcHRNYW5hZ2VyIDxzY3JpcHRUb0ludm9rZT4gPGpzQ29kZVRvRXZhbHVhdGU+IC0gPGFyZ3VtZW50cyB0byB0YXJnZXQgc2NyaXB0PmAgZS5nLiBgeWFybiBydW4gc2NyaXB0TWFuYWdlciBzbGVlcCAnLnNldEludGVydmFsKCknYFxyXG4gKiAgICAgICBgeWFybiBzY3JpcHRNYW5hZ2VyIHRlc3QgXCIucnVuVGVzdCh7IHRlc3RQYXRoOiAnJHtQV0R9L3Rlc3QnLCB0YXJnZXRQcm9qZWN0OiBhcGkucHJvamVjdCB9KVwiYCAvLyB3aGVyZSBgYXBpYCBpcyBleHBvc2VkIGJ5IHRoZSBzY3JpcHRNYW5hZ2VyIHRvIHRoZSBldmFsdWF0ZWQgc2NyaXB0LlxyXG4gKiAgICAgICBzY3JpcHRDb25maWcgYWRhcHRlckZ1bmN0aW9uICsgYHlhcm4gc2NyaXB0TWFuYWdlciB0ZXN0IFwiLnJ1blRlc3QoeyB0ZXN0UGF0aDogJyR7UFdEfS90ZXN0JyB9KVwiYCAvLyB3aGVyZSBhbiBhZGFwdGVyIGlzIHByb3ZpZGVkIGluIHNjcmlwdENvbmZpZyB0byBzZXQgdGhlICd0YXJnZXRQcm9qZWN0JyBmcm9tIHRoZSBhcGkgb2Ygc2NyaXB0TWFuYWdlci5cclxuICpcclxuICpcclxuICogW25vdGVdIGRpc3Rpbmd1aXNoIGJldHdlZW4gdGhlIG93bkNvbmZpZ3VyYXRpb24gYW5kIHRoZSB0YXJnZXQgYXBwbGljYXRpb24gY29uZmlndXJhdGlvbi5cclxuICovXHJcbmFzeW5jIGZ1bmN0aW9uIGNsaUludGVyZmFjZSh7XHJcbiAgY29tbWFuZEFyZ3VtZW50ID0gcHJvY2Vzcy5hcmd2LnNsaWNlKDIpIC8qIHJlbW92ZSBmaXJzdCB0d28gYXJndW1lbnRzIGBydW50aW1lYCwgYG1vZHVsZSBwYXRoYCAqLyxcclxuICBhcmd1bWVudERlbGltaXRlciA9ICctJywgLy8gZGVsaW1pdGVyIHN5bWJvbCBmb3IgZGlmZmVyZW50aWF0aW5nIG93biBhcmd1bWVudHMgZnJvbSB0aGUgdGFyZ2V0IHNjcmlwdCBhcmd1bWVudHMuIHVzaW5nIGAtYCBpbnN0ZWFkIG9mIGAtLWAgYmVjYXVzZSB5YXJuIHJlbW92ZXMgdGhlIGRvdWJsZSBzbGFzaCAoYWx0aG91Z2ggaW4gZnV0dXJlIHZlcnNpb24gaXQgd29uJ3QsIGFzIHdhcyBtZW50aW9uZWQpLlxyXG4gIGN1cnJlbnREaXJlY3RvcnkgPSBwcm9jZXNzLmVudi5QV0QgfHwgcHJvY2Vzcy5jd2QoKSAvKkluIGNhc2UgcnVuIGluIFdpbmRvd3Mgd2hlcmUgUFdEIGlzIG5vdCBzZXQuKi8sXHJcbiAgZW52cmlyb25tZW50QXJndW1lbnQgPSBwcm9jZXNzLmVudixcclxuICBzY3JpcHRLZXlUb0ludm9rZSwgLy8gdGhlIGtleSBuYW1lIGZvciB0aGUgc2NyaXB0IHRoYXQgc2hvdWxkIGJlIGV4ZWN1dGVkIChjb21wYXJlZCB3aXRoIHRoZSBrZXkgaW4gdGhlIGNvbmZpZ3VyYXRpb24gZmlsZS4pXHJcbiAgdGFyZ2V0UHJvamVjdENvbmZpZ1BhdGgsIC8vIHRoZSBwYXRoIHRvIHRoZSBjb25maWd1cmF0aW9uIGZpbGUgb2YgdGhlIHRhcmdldCBhcHBsaWNhdGlvbi4gcmVsYXRpdmUgcGF0aCB0byB0YXJnZXQgcHJvamVjdCBjb25maWd1cmF0aW9uIGZyb20gY3VycmVudCB3b3JraW5nIGRpcmVjdG9yeS5cclxuICBqc0NvZGVUb0V2YWx1YXRlLFxyXG4gIHNob3VsZENvbXBpbGVTY3JpcHQsXHJcbn0gPSBbXSkge1xyXG4gIC8qKiBBcmd1bWVudCBpbml0aWFsaXphdGlvbiwgdmFsaWRhdGlvbiwgc2FuaXRpemF0aW9uXHJcbiAgICogZ2V0IGFyZ3VtZW50cyAtIEFQSSBvZiBhY2NlcHRlZCB2YXJpYmFsZXMgZnJvbSAocHJpb3JpdHkgbGlzdClcclxuICAgKiAxLiBpbW1lZGlhdGVseSBwYXNzZWQgYXJndW1lbnQgaW4gY29kZS5cclxuICAgKiAyLiBFbnZpcm9ubWVudCB2YXJpYWJsZXNcclxuICAgKiAzLiBDb21tYW5kbGluZSBhcmd1bWVudHNcclxuICAgKi9cclxuICBsZXQgc3RhbmRhcnRJbnB1dERhdGEgPSBhd2FpdCBsb2FkU3RkaW4oKSAvLyBpbiBjYXNlIGluIHNoZWxsIHBpcGVsaW5lIC0gZ2V0IGlucHV0XHJcbiAgLy8gc3BsaXQgY29tbWFuZGxpbmUgYXJndW1lbnRzIGJ5IGRlbGltaXRlclxyXG4gIGxldCBbb3duQ29tbWFuZEFyZ3VtZW50LCB0YXJnZXRTY3JpcHRDb21tYW5kQXJndW1lbnRdID0gc3BsaXRBcnJheVRvVHdvQnlEZWxpbWl0ZXIoeyBhcnJheTogY29tbWFuZEFyZ3VtZW50LCBkZWxpbWl0ZXI6IGFyZ3VtZW50RGVsaW1pdGVyIH0pXHJcbiAgbGV0IFtwYWlyQXJndW1lbnQsIG5vblBhaXJBcmd1bWVudF0gPSBkaXZpZGVBcnJheUJ5RmlsdGVyKHsgYXJyYXk6IG93bkNvbW1hbmRBcmd1bWVudCwgZmlsdGVyRnVuYzogaXRlbSA9PiBpdGVtLmluY2x1ZGVzKCc9JykgfSkgLy8gc2VwYXJhdGUgYXJndW1lbnRzIHRoYXQgYXJlIGtleS12YWx1ZSBwYWlyIGZyb20gdGhlIHJlc3RcclxuICBsZXQgcGFyc2VkQ29tbWFuZEFyZ3VtZW50ID0gcGFyc2VLZXlWYWx1ZVBhaXJTZXBhcmF0ZWRCeVN5bWJvbEZyb21BcnJheSh7IGFycmF5OiBwYWlyQXJndW1lbnQsIHNlcGFyYXRpbmdTeW1ib2w6ICc9JyB9KSAvLyBwYXJzZSBga2V5PXZhbHVlYCBub2RlIGNvbW1hbmQgbGluZSBhcmd1bWVudHNcclxuICAvLyBjcmVhdGUgY29tbWFuZCBhcmd1bWVudHMgZm9yIHRhcmdldCBzY3JpcHQuXHJcbiAgcHJvY2Vzcy5hcmd2ID0gW3Byb2Nlc3MuYXJndlswXSwgcHJvY2Vzcy5hcmd2WzFdIC8qIHNob3VsZCBiZSBzdWJzdGl0dXRlZCBieSBmdWxsIHRhcmdldCBzY3JpcHQgcGF0aCBhZnRlciBsb29rdXAgKi8sIC4uLnRhcmdldFNjcmlwdENvbW1hbmRBcmd1bWVudF1cclxuXHJcbiAgLy8gdGFyZ2V0IGFwcGxpY2F0aW9uIGNvbmZpZ3VyYXRpb24gZmlsZTpcclxuICBsZXQgY29uZmlndXJhdGlvbkZpbGVMb29rdXBDYWxsYmFjayA9IGNvbmZpZ1BhdGggPT4ge1xyXG4gICAgY29uZmlnUGF0aCA9IGNvbmZpZ3VyYXRpb25GaWxlTG9va3VwKHtcclxuICAgICAgY29uZmlndXJhdGlvblBhdGg6IGNvbmZpZ1BhdGgsXHJcbiAgICAgIGN1cnJlbnREaXJlY3RvcnksXHJcbiAgICAgIGNvbmZpZ3VyYXRpb25CYXNlUGF0aDogb3duQ29uZmlndXJhdGlvbi50YXJnZXRBcHAuY29uZmlndXJhdGlvbkJhc2VQYXRoLFxyXG4gICAgfSkucGF0aFxyXG4gICAgLy8gYXNzcmV0IGVudHJ5cG9pbnQgY29uZmlndXJhdGlvbiBvYmplY3RzL29wdGlvbnMgZXhpc3QuXHJcbiAgICBjb25zb2xlLmFzc2VydChyZXF1aXJlLnJlc29sdmUoY29uZmlnUGF0aCksICdcXHgxYls0MW0lc1xceDFiWzBtJywgYOKdjCBDb25maWd1cmF0aW9uIGZpbGUgZG9lc24ndCBleGlzdCBpbiAke2NvbmZpZ1BhdGh9YClcclxuICAgIHJldHVybiBjb25maWdQYXRoXHJcbiAgfVxyXG5cclxuICAvLyBbMV0gYWNjZXB0cyBhIHNpbmdsZSBhcmd1bWVudCBzdHJpbmcgdG8gYmUgZXZhbHVhdGVkIGFzIEpTIGNvZGUsIGluIGFkZGl0aW9uIHRvIGVudmlyb25tZW50IHZhcmlhYmxlcyBmb3IgZXhlY3V0aW9uIG9mIHRoZSBwcm9ncmFtbWF0aWMgYXBpLlxyXG4gIGFzeW5jIGZ1bmN0aW9uIGV2YWx1YXRlSW50ZXJmYWNlKCkge1xyXG4gICAgc2NyaXB0S2V5VG9JbnZva2UgfHw9IGVudnJpcm9ubWVudEFyZ3VtZW50LnNjcmlwdEtleVRvSW52b2tlXHJcbiAgICB0YXJnZXRQcm9qZWN0Q29uZmlnUGF0aCB8fD0gc3RhbmRhcnRJbnB1dERhdGEgfHwgZW52cmlyb25tZW50QXJndW1lbnQudGFyZ2V0Q29uZmlnXHJcbiAgICBzaG91bGRDb21waWxlU2NyaXB0IHx8PSBlbnZyaXJvbm1lbnRBcmd1bWVudC5zaG91bGRDb21waWxlU2NyaXB0XHJcbiAgICB0YXJnZXRQcm9qZWN0Q29uZmlnUGF0aCA9IGNvbmZpZ3VyYXRpb25GaWxlTG9va3VwQ2FsbGJhY2sodGFyZ2V0UHJvamVjdENvbmZpZ1BhdGgpXHJcbiAgICAvLyBzdHJpbmcganMgY29kZSB0aGF0IHdpbGwgYmUgdXNlZCBvbiB0aGUgY2FsbGJhY2suXHJcbiAgICBsZXQgY29kZVRvRXZhbHVhdGVGb3JPd25Nb2R1bGUgPSBvd25Db21tYW5kQXJndW1lbnRbMF0sXHJcbiAgICAgIGRlZmF1bHRFdmFsdWF0ZUNhbGxWYWx1ZUZvckZpcnN0UGFyYW1ldGVyID0geyB0YXJnZXRQcm9qZWN0Q29uZmlnUGF0aCwgc2NyaXB0S2V5VG9JbnZva2UsIGpzQ29kZVRvRXZhbHVhdGUsIHNob3VsZENvbXBpbGVTY3JpcHQgfVxyXG4gICAgLy8gZXhlY3V0ZSBhcGkgdXNpbmcgc3RyaW5nIGV2YWx1YXRlZCBjb2RlLlxyXG4gICAgbGV0IGNvbnRleHRFbnZpcm9ubWVudCA9IHZtLmNyZWF0ZUNvbnRleHQoXHJcbiAgICAgIE9iamVjdC5hc3NpZ24oZ2xvYmFsLCB7XHJcbiAgICAgICAgLy8gd3JhcHBlciBmdW5jdGlvbiBhcm91bmcgJ3NjcmlwdE1hbmFnZXInIGluIG9yZGVyIHRvIGFwcGx5IGRlZmF1bHQgdmFsdWVzXHJcbiAgICAgICAgLy8gVE9ETzogVXNlciBzeW1ib2xzIGlmIHBvc3NpYmxlIGluc3RlYWQgb2YgYSBzdHJpbmcgZm9yIHRoZSB3cmFwcGluZyBmdW5jdGlvbi5cclxuICAgICAgICBfcmVxdWlyZWRNb2R1bGVTY3JpcHRNYW5hZ2VyV3JhcHBlcl86IGFzeW5jICguLi5hcmdzKSA9PiB7XHJcbiAgICAgICAgICAvLyBzaW1pbGFyIHRvIGEgY3VycnkgZnVuY3Rpb24gd3JhcHBlciwgc2V0dGluZyBkZWZhdWx0IHZhbHVlc1xyXG4gICAgICAgICAgLy8gcHJvY2VzcyBhcmdzIHNldHRpbmcgZGVmYXVsdCB2YWx1ZXNcclxuICAgICAgICAgIGFyZ3NbMF0gPSBPYmplY3QuYXNzaWduKGRlZmF1bHRFdmFsdWF0ZUNhbGxWYWx1ZUZvckZpcnN0UGFyYW1ldGVyLCBhcmdzWzBdKSAvLyB0aGVzZSBhcmUgaXMgc3BlY2lmaWMgbnVtYmVyIG9mIHBhcmFtZXRlcnMgdGhhdCBgc2NyaXB0TWFuYWdlcmAgZnVuY3Rpb24gaGFzXHJcbiAgICAgICAgICBhd2FpdCBzY3JpcHRNYW5hZ2VyKC4uLmFyZ3MpLmNhdGNoKGVycm9yID0+IGNvbnNvbGUubG9nKGVycm9yKSlcclxuICAgICAgICB9LFxyXG4gICAgICB9KSxcclxuICAgIClcclxuICAgIHRyeSB7XHJcbiAgICAgIC8vIHdoZXJlIGBfYCBhdmFpbGFibGUgaW4gY29udGV4dCBvZiB2bSwgY2FsbHMgYHNjcmlwdE1hbmFnZXJgIG1vZHVsZS5cclxuICAgICAgbGV0IHZtU2NyaXB0ID0gbmV3IHZtLlNjcmlwdChgX3JlcXVpcmVkTW9kdWxlU2NyaXB0TWFuYWdlcldyYXBwZXJfJHtjb2RlVG9FdmFsdWF0ZUZvck93bk1vZHVsZX1gLCB7XHJcbiAgICAgICAgZmlsZW5hbWU6IHBhdGgucmVzb2x2ZSgnLi4vJykgLyogYWRkIGZpbGUgdG8gTm9kZSdzIGV2ZW50IGxvb3Agc3RhY2sgdHJhY2UgKi8sXHJcbiAgICAgIH0pXHJcblxyXG4gICAgICAvLyBUT0RPOiBGaXggZXhpdCBsb2dnaW5nIHdoZW4gY3RybCtjIGlzIHJlY2VpdmVlZC4gKENoZWNrIFRPRE8gbGlzdClcclxuICAgICAgdm1TY3JpcHQucnVuSW5Db250ZXh0KGNvbnRleHRFbnZpcm9ubWVudCwgeyBicmVha09uU2lnaW50OiB0cnVlIC8qIGJyZWFrIHdoZW4gQ3RybCtDIGlzIHJlY2VpdmVkLiAqLyB9KVxyXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcclxuICAgICAgY29uc29sZS5sb2coYOKdjCBSdW5uaW5nICd2bSBydW5JbkNvbnRleHQnIGNvZGUgZmFpbGVkIGR1cmluZyBleGVjdXRpb24uYClcclxuICAgICAgdGhyb3cgZXJyb3JcclxuICAgIH1cclxuICB9XHJcblxyXG4gIC8vIFsyXSBhY2NlcHRzIGNvbW1hbmQgYXJndW1lbnRzIG9yIGVudmlyb25tZW50IHZhcmlhYmxlcyBhcyBwYXJhbWV0ZXJzIGZvciB0aGUgZXhlY3V0aW9uIG9mIHRoZSBwcm9ncmFtbWF0aWMgYXBpLlxyXG4gIGFzeW5jIGZ1bmN0aW9uIHBhc3NlZEFyZ3VtZW50SW50ZXJmYWNlKCkge1xyXG4gICAgc2NyaXB0S2V5VG9JbnZva2UgfHw9IHBhcnNlZENvbW1hbmRBcmd1bWVudC5zY3JpcHRLZXlUb0ludm9rZSB8fCBlbnZyaXJvbm1lbnRBcmd1bWVudC5zY3JpcHRLZXlUb0ludm9rZSB8fCBub25QYWlyQXJndW1lbnRbMF0gLy8gYWxsb3cgZm9yIHNob3J0aGFuZCBjb21tYW5kIGNhbGwuXHJcbiAgICBqc0NvZGVUb0V2YWx1YXRlIHx8PSBwYXJzZWRDb21tYW5kQXJndW1lbnQuanNDb2RlVG9FdmFsdWF0ZSB8fCBlbnZyaXJvbm1lbnRBcmd1bWVudC5zY3JpcHRLZXlUb0ludm9rZSB8fCBub25QYWlyQXJndW1lbnRbMV1cclxuICAgIHNob3VsZENvbXBpbGVTY3JpcHQgfHw9IHBhcnNlZENvbW1hbmRBcmd1bWVudC5zaG91bGRDb21waWxlU2NyaXB0IHx8IGVudnJpcm9ubWVudEFyZ3VtZW50LnNob3VsZENvbXBpbGVTY3JpcHQgfHwgbm9uUGFpckFyZ3VtZW50WzJdXHJcbiAgICBwcm9jZXNzLmFyZ3ZbMV0gPSBzY3JpcHRLZXlUb0ludm9rZSB8fCBwcm9jZXNzLmFyZ3ZbMV0gLy9UaGUgcGF0aCB0byB0aGUgc2NyaXB0IHNob3VsZCBiZSBjaGFuZ2VkIGFmdGVyIHNjcmlwdCBsb29rdXAgYnkgc3VjY2VlZGluZyBtb2R1bGVzLlxyXG4gICAgLy8gdGFyZ2V0IGFwcGxpY2F0aW9uJ3MgY29uZmlndXJhdGlvbiBmaWxlIHBhcmFtZXRlciBoaWVyYXJjaHlcclxuICAgIHRhcmdldFByb2plY3RDb25maWdQYXRoIHx8PSBwYXJzZWRDb21tYW5kQXJndW1lbnQudGFyZ2V0Q29uZmlnIHx8IHN0YW5kYXJ0SW5wdXREYXRhIC8qIHN0ZGluIGlucHV0ICovIHx8IGVudnJpcm9ubWVudEFyZ3VtZW50LnRhcmdldENvbmZpZ1xyXG4gICAgdGFyZ2V0UHJvamVjdENvbmZpZ1BhdGggPSBjb25maWd1cmF0aW9uRmlsZUxvb2t1cENhbGxiYWNrKHRhcmdldFByb2plY3RDb25maWdQYXRoKVxyXG4gICAgYXdhaXQgc2NyaXB0TWFuYWdlcih7IHRhcmdldFByb2plY3RDb25maWdQYXRoLCBzY3JpcHRLZXlUb0ludm9rZSwganNDb2RlVG9FdmFsdWF0ZSwgc2hvdWxkQ29tcGlsZVNjcmlwdCB9KS5jYXRjaChlcnJvciA9PiBjb25zb2xlLmVycm9yKGVycm9yKSlcclxuICB9XHJcblxyXG4gIC8vIGNoZWNrIGlmIHRoZSBmaXJzdCBhcmd1bWVudCBmb3IgaXMgYSBKYXZhc2NyaXB0IGNvZGUgdGhhdCBzaG91bGQgYmUgZXZhbHVhdGVkIG9uIGFuIGltcG9ydGVkIG1vZHVsZS5cclxuICBpc0pTQ29kZVRvRXZhbHVhdGUoeyBzdHJpbmc6IG5vblBhaXJBcmd1bWVudFswXSB9KSA/IGF3YWl0IGV2YWx1YXRlSW50ZXJmYWNlKCkgOiBhd2FpdCBwYXNzZWRBcmd1bWVudEludGVyZmFjZSgpXHJcbn1cclxuIl19
