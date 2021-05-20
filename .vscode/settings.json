@@ -64,7 +64,8 @@
         "titleBar.inactiveForeground": "#e7e7e799",
         "statusBar.background": "#407476",
         "statusBarItem.hoverBackground": "#529497",
-        "statusBar.foreground": "#e7e7e7"
+        "statusBar.foreground": "#e7e7e7",
+        "activityBar.activeBackground": "#407476"
     },
     "peacock.color": "#eb5424",
     "editor.codeActionsOnSave": {
